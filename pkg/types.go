@@ -1,6 +1,5 @@
 package pkg
 
-//+kubebuilder:object:root=true
 type Response struct {
 	Result  string          `json:"result,omitempty"`
 	Reason  string          `json:"reason,omitempty"`
