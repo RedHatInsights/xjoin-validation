@@ -1,9 +1,15 @@
 package internal
 
 import (
+	"fmt"
+	. "github.com/RedHatInsights/xjoin-validation/pkg"
 	"github.com/go-errors/errors"
+	"github.com/go-test/deep"
 	"github.com/redhatinsights/xjoin-operator/controllers/utils"
 	"math"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -13,6 +19,85 @@ type Validator struct {
 	validationPeriod  int
 	validationLagComp int
 	state             string
+	dbIds             []string
+}
+
+func (v *Validator) Validate() (response Response, err error) {
+	countResponse, err := v.ValidateCount()
+	if err != nil {
+		return response, errors.Wrap(err, 0)
+	}
+
+	if !countResponse.isValid {
+		message := fmt.Sprintf(
+			"%v discrepancy in count. %v documents in elasticsearch. %v rows in database.",
+			countResponse.mismatchCount, countResponse.esCount, countResponse.dbCount)
+
+		response = Response{
+			Result:  "invalid",
+			Reason:  "count mismatch",
+			Message: message,
+			Details: ResponseDetails{
+				TotalMismatch: countResponse.mismatchCount,
+			},
+		}
+
+		return
+	}
+
+	idsResponse, err := v.ValidateIDs()
+	if err != nil {
+		return response, errors.Wrap(err, 0)
+	}
+
+	if !idsResponse.isValid {
+		message := fmt.Sprintf(
+			"%v ids did not match.",
+			idsResponse.mismatchCount)
+
+		response = Response{
+			Result:  "invalid",
+			Reason:  "id mismatch",
+			Message: message,
+			Details: ResponseDetails{
+				TotalMismatch:                    idsResponse.mismatchCount,
+				IdsMissingFromElasticsearch:      idsResponse.inDBOnly[:utils.Min(50, len(idsResponse.inDBOnly))],
+				IdsMissingFromElasticsearchCount: len(idsResponse.inDBOnly),
+				IdsOnlyInElasticsearch:           idsResponse.inESOnly[:utils.Min(50, len(idsResponse.inESOnly))],
+				IdsOnlyInElasticsearchCount:      len(idsResponse.inESOnly),
+			},
+		}
+
+		return
+	}
+
+	contentResponse, err := v.ValidateContent()
+	if err != nil {
+		return response, errors.Wrap(err, 0)
+	}
+
+	if !contentResponse.isValid {
+		message := fmt.Sprintf(
+			"%v record's contents did not match.",
+			contentResponse.mismatchCount)
+
+		response = Response{
+			Result:  "invalid",
+			Reason:  "content mismatch",
+			Message: message,
+			Details: ResponseDetails{
+				TotalMismatch:          contentResponse.mismatchCount,
+				IdsWithMismatchContent: []string{},
+				MismatchContentDetails: []MismatchContentDetails{},
+			},
+		}
+
+		return
+	}
+
+	return Response{
+		Result: "valid",
+	}, nil
 }
 
 type ValidateCountResponse struct {
@@ -124,6 +209,153 @@ func (v *Validator) ValidateIDs() (response ValidateIDsResponse, err error) {
 	return
 }
 
-func (v *Validator) ValidateContent() {
+type idDiff struct {
+	id   string
+	diff string
+}
 
+func (v *Validator) validateFullChunkSync(chunk []string) (allIdDiffs []idDiff, err error) {
+	//retrieve hosts from db and es
+	esDocuments, err := v.ESClient.GetDocumentsByIDs(chunk)
+	if err != nil {
+		return allIdDiffs, errors.Wrap(err, 0)
+	}
+	if esDocuments == nil {
+		esDocuments = make([]interface{}, 0)
+	}
+
+	dbHosts, err := v.DBClient.GetRowsByIDs(chunk)
+	if err != nil {
+		return allIdDiffs, errors.Wrap(err, 0)
+	}
+	if dbHosts == nil {
+		dbHosts = make([]interface{}, 0)
+	}
+
+	deep.MaxDiff = len(chunk) * 100
+	diffs := deep.Equal(dbHosts, esDocuments)
+
+	//build the change object for logging
+	for _, diff := range diffs {
+		idxStr := diff[strings.Index(diff, "[")+1 : strings.Index(diff, "]")]
+
+		var idx int64
+		idx, err = strconv.ParseInt(idxStr, 10, 64)
+		if err != nil {
+			return
+		}
+		id := chunk[idx]
+		allIdDiffs = append(allIdDiffs, idDiff{id: id, diff: diff})
+	}
+
+	return
+}
+
+func (v *Validator) validateFullChunkAsync(chunk []string, allIdDiffs chan idDiff, errorsChan chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	diffs, err := v.validateFullChunkSync(chunk)
+	if err != nil {
+		errorsChan <- err
+		return
+	}
+
+	for _, diff := range diffs {
+		allIdDiffs <- diff
+	}
+
+	return
+}
+
+type ValidateContentResponse struct {
+	mismatchCount     int
+	mismatchRatio     float64
+	isValid           bool
+	mismatchedRecords map[string][]string
+}
+
+func (v *Validator) ValidateContent() (response ValidateContentResponse, err error) {
+	allIdDiffs := make(chan idDiff, len(v.dbIds)*100)
+	errorsChan := make(chan error, len(v.dbIds))
+	numThreads := 0
+	wg := new(sync.WaitGroup)
+
+	//chunkSize := i.Parameters.FullValidationChunkSize.Int() //TODO parameterize
+	chunkSize := 100
+	var numChunks = int(math.Ceil(float64(len(v.dbIds)) / float64(chunkSize)))
+
+	for j := 0; j < numChunks; j++ {
+		//determine which chunk of systems to validate
+		start := j * chunkSize
+		var end int
+		if j == numChunks-1 && len(v.dbIds)%chunkSize > 0 {
+			end = start + (len(v.dbIds) % chunkSize)
+		} else {
+			end = start + chunkSize
+		}
+		chunk := v.dbIds[start:end]
+
+		//validate chunks in parallel
+		wg.Add(1)
+		numThreads += 1
+		go v.validateFullChunkAsync(chunk, allIdDiffs, errorsChan, wg)
+
+		maxThreads := 10 //TODO: parameterize
+		if numThreads == maxThreads || j == numChunks-1 {
+			wg.Wait()
+			numThreads = 0
+		}
+	}
+
+	close(allIdDiffs)
+	close(errorsChan)
+
+	if len(errorsChan) > 0 {
+		for e := range errorsChan {
+			fmt.Println("Error during full validation")
+			fmt.Println(e)
+		}
+
+		return response, errors.Wrap(errors.New("Error during full validation"), 0)
+	}
+
+	//double check mismatched hosts to account for lag
+	var mismatchedIds []string
+	for d := range allIdDiffs {
+		mismatchedIds = append(mismatchedIds, d.id)
+	}
+
+	diffsById := make(map[string][]string)
+	if len(mismatchedIds) > 0 {
+		var diffs []idDiff
+		diffs, err = v.validateFullChunkSync(mismatchedIds)
+		if err != nil {
+			return
+		}
+
+		//group diffs by id for counting mismatched systems
+		for _, d := range diffs {
+			diffsById[d.id] = append(diffsById[d.id], d.diff)
+		}
+	}
+
+	//determine if the data is valid within the threshold
+	response.mismatchCount = len(diffsById)
+	response.mismatchRatio = float64(response.mismatchCount) / math.Max(float64(len(v.dbIds)), 1)
+	//response.isValid = (response.mismatchRatio * 100) <= float64(i.GetValidationPercentageThreshold())
+	response.isValid = response.mismatchCount == 0
+
+	//log at most 50 invalid systems
+	mismatchedRecords := make(map[string][]string)
+	idx := 0
+	for key, val := range diffsById {
+		if idx > 50 {
+			break
+		}
+		mismatchedRecords[key] = val
+		idx++
+	}
+	response.mismatchedRecords = mismatchedRecords
+
+	return
 }

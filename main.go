@@ -3,16 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	. "github.com/RedHatInsights/xjoin-validation/internal"
 	. "github.com/RedHatInsights/xjoin-validation/pkg"
-	"github.com/elastic/go-elasticsearch/v7"
-	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/redhatinsights/xjoin-operator/controllers/avro"
-	"github.com/redhatinsights/xjoin-operator/controllers/database"
-	xjoinElasticsearch "github.com/redhatinsights/xjoin-operator/controllers/elasticsearch"
-	"github.com/redhatinsights/xjoin-operator/controllers/utils"
-	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -20,27 +14,27 @@ import (
 func main() {
 	fmt.Println("Starting validation...")
 
-	//parse avro schema
-	//for db.table in avroSchema.fields
+	//unmarshal avro schema
 	var fullAvroSchema avro.Schema
 	err := json.Unmarshal([]byte(os.Getenv("FULL_AVRO_SCHEMA")), &fullAvroSchema)
 
 	if err != nil {
-		fmt.Println("error parsing schema")
+		fmt.Println("error parsing full avro schema")
 		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	var indexAvroSchema avro.Schema
 	err = json.Unmarshal([]byte(os.Getenv("INDEX_AVRO_SCHEMA")), &indexAvroSchema)
 	if err != nil {
-		fmt.Println("error parsing index schema")
+		fmt.Println("error parsing index avro schema")
 		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	//TODO: connect to DB
+	//connect to database
 	datasourceName := strings.Split(fullAvroSchema.Namespace, ".")[0]
-
-	db := database.NewDatabase(database.DBParams{
+	dbClient, err := NewDBClient(DBParams{
 		User:     os.Getenv(datasourceName + "_DB_USERNAME"),
 		Password: os.Getenv(datasourceName + "_DB_PASSWORD"),
 		Host:     os.Getenv(datasourceName + "_DB_HOSTNAME"),
@@ -48,66 +42,33 @@ func main() {
 		Port:     os.Getenv(datasourceName + "_DB_PORT"),
 		SSLMode:  "disable",
 	})
-
-	err = db.Connect()
 	if err != nil {
-		fmt.Println("error connecting to db")
+		fmt.Println("error connecting to database")
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	rows, err := db.CountHosts()
-	if err != nil {
-		fmt.Println("error running query")
-	}
-
-	fmt.Println(rows)
-
-	//TODO: connect to ES
-	cfg := elasticsearch.Config{
-		//Addresses: []string{os.Getenv("ELASTICSEARCH_URL")},
+	//connect to Elasticsearch
+	esClient, err := NewESClient(ESParams{
+		Url:      os.Getenv("ELASTICSEARCH_URL"),
 		Username: os.Getenv("ELASTICSEARCH_USERNAME"),
 		Password: os.Getenv("ELASTICSEARCH_PASSWORD"),
-		//Transport: &http.Transport{
-		//	TLSClientConfig: &tls.Config{
-		//		InsecureSkipVerify: false,
-		//	},
-		//},
-	}
-
-	esClient, err := elasticsearch.NewClient(cfg)
+		Index:    os.Getenv("ELASTICSEARCH_INDEX"),
+	})
 	if err != nil {
-		fmt.Println("error creating ES client")
+		fmt.Println("error connecting to elasticsearch")
 		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	req := esapi.CountRequest{
-		Index: []string{os.Getenv("ELASTICSEARCH_INDEX")},
+	//run validation
+	validator := Validator{
+		DBClient: *dbClient,
+		ESClient: *esClient,
 	}
-
-	ctx, cancel := utils.DefaultContext()
-	defer cancel()
-	res, err := req.Do(ctx, esClient)
-	if err != nil {
-		fmt.Println("error running es count query")
-		fmt.Println(err)
-	}
-
-	var countIDsResponse xjoinElasticsearch.CountIDsResponse
-	byteValue, _ := ioutil.ReadAll(res.Body)
-	err = json.Unmarshal(byteValue, &countIDsResponse)
-	if err != nil {
-		fmt.Println("error parsing countids response")
-	}
-
-	//TODO: compare count
-	fmt.Println("es count: " + strconv.Itoa(countIDsResponse.Count))
-
-	//TODO: compare IDs
-
-	//TODO: compare full content
+	validator.Validate()
 
 	//TODO: retry n times, auto retry if sync is progressing (e.g. previous mismatch count < new mismatch count)
-
-	//TODO: build response
 
 	response := Response{
 		Result:  "valid",
