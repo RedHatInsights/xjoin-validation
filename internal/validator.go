@@ -2,9 +2,11 @@ package internal
 
 import (
 	"fmt"
-	. "github.com/RedHatInsights/xjoin-validation/pkg"
+	. "github.com/RedHatInsights/xjoin-validation/internal/database"
+	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
 	"github.com/go-errors/errors"
 	"github.com/go-test/deep"
+	"github.com/redhatinsights/xjoin-operator/api/v1alpha1"
 	"github.com/redhatinsights/xjoin-operator/controllers/utils"
 	"math"
 	"strconv"
@@ -16,13 +18,13 @@ import (
 type Validator struct {
 	DBClient
 	ESClient
-	validationPeriod  int
-	validationLagComp int
-	state             string
+	ValidationPeriod  int
+	ValidationLagComp int
+	State             string
 	dbIds             []string
 }
 
-func (v *Validator) Validate() (response Response, err error) {
+func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error) {
 	countResponse, err := v.ValidateCount()
 	if err != nil {
 		return response, errors.Wrap(err, 0)
@@ -30,19 +32,21 @@ func (v *Validator) Validate() (response Response, err error) {
 
 	if !countResponse.isValid {
 		message := fmt.Sprintf(
-			"%v discrepancy in count. %v documents in elasticsearch. %v rows in database.",
+			"%v discrepancies while counting. %v documents in elasticsearch. %v rows in database.",
 			countResponse.mismatchCount, countResponse.esCount, countResponse.dbCount)
 
-		response = Response{
+		response = v1alpha1.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "count mismatch",
 			Message: message,
-			Details: ResponseDetails{
+			Details: v1alpha1.ResponseDetails{
 				TotalMismatch: countResponse.mismatchCount,
 			},
 		}
 
 		return
+	} else {
+		fmt.Println("count is valid")
 	}
 
 	idsResponse, err := v.ValidateIDs()
@@ -55,11 +59,11 @@ func (v *Validator) Validate() (response Response, err error) {
 			"%v ids did not match.",
 			idsResponse.mismatchCount)
 
-		response = Response{
+		response = v1alpha1.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "id mismatch",
 			Message: message,
-			Details: ResponseDetails{
+			Details: v1alpha1.ResponseDetails{
 				TotalMismatch:                    idsResponse.mismatchCount,
 				IdsMissingFromElasticsearch:      idsResponse.inDBOnly[:utils.Min(50, len(idsResponse.inDBOnly))],
 				IdsMissingFromElasticsearchCount: len(idsResponse.inDBOnly),
@@ -69,6 +73,8 @@ func (v *Validator) Validate() (response Response, err error) {
 		}
 
 		return
+	} else {
+		fmt.Println("ids are valid")
 	}
 
 	contentResponse, err := v.ValidateContent()
@@ -81,21 +87,23 @@ func (v *Validator) Validate() (response Response, err error) {
 			"%v record's contents did not match.",
 			contentResponse.mismatchCount)
 
-		response = Response{
+		response = v1alpha1.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "content mismatch",
 			Message: message,
-			Details: ResponseDetails{
+			Details: v1alpha1.ResponseDetails{
 				TotalMismatch:          contentResponse.mismatchCount,
 				IdsWithMismatchContent: []string{},
-				MismatchContentDetails: []MismatchContentDetails{},
+				MismatchContentDetails: []v1alpha1.MismatchContentDetails{},
 			},
 		}
 
 		return
+	} else {
+		fmt.Println("content is valid")
 	}
 
-	return Response{
+	return v1alpha1.ValidationResponse{
 		Result: "valid",
 	}, nil
 }
@@ -154,12 +162,12 @@ func (v *Validator) ValidateIDs() (response ValidateIDsResponse, err error) {
 	now := time.Now().UTC()
 
 	var startTime time.Time
-	if v.state == "INITIAL_SYNC" {
+	if v.State == "INITIAL_SYNC" {
 		startTime = time.Unix(86400, 0) //24 hours since epoch
 	} else {
-		startTime = now.Add(-time.Duration(v.validationPeriod) * time.Minute)
+		startTime = now.Add(-time.Duration(v.ValidationPeriod) * time.Minute)
 	}
-	endTime := now.Add(-time.Duration(v.validationLagComp) * time.Second)
+	endTime := now.Add(-time.Duration(v.ValidationLagComp) * time.Second)
 
 	//validate chunk between startTime and endTime //TODO: can this rely on the presence of a modified_on field?
 	dbIds, err := v.DBClient.GetIDsByModifiedOn(startTime, endTime)

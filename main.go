@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	. "github.com/RedHatInsights/xjoin-validation/internal"
-	. "github.com/RedHatInsights/xjoin-validation/pkg"
+	. "github.com/RedHatInsights/xjoin-validation/internal/database"
+	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
 	"github.com/redhatinsights/xjoin-operator/controllers/avro"
 	"os"
 	"strings"
@@ -40,6 +41,7 @@ func main() {
 		Host:     os.Getenv(datasourceName + "_DB_HOSTNAME"),
 		Name:     os.Getenv(datasourceName + "_DB_NAME"),
 		Port:     os.Getenv(datasourceName + "_DB_PORT"),
+		Table:    os.Getenv(datasourceName + "_DB_TABLE"),
 		SSLMode:  "disable",
 	})
 	if err != nil {
@@ -63,35 +65,25 @@ func main() {
 
 	//run validation
 	validator := Validator{
-		DBClient: *dbClient,
-		ESClient: *esClient,
+		DBClient:          *dbClient,
+		ESClient:          *esClient,
+		ValidationPeriod:  60,
+		ValidationLagComp: 120,
 	}
-	validator.Validate()
-
-	//TODO: retry n times, auto retry if sync is progressing (e.g. previous mismatch count < new mismatch count)
-
-	response := Response{
-		Result:  "valid",
-		Reason:  "count mismatch",
-		Message: "20 rows missing from Elasticsearch",
-		Details: ResponseDetails{
-			TotalMismatch:                    20,
-			IdsMissingFromElasticsearch:      []string{"1", "2", "3"},
-			IdsMissingFromElasticsearchCount: 20,
-			IdsOnlyInElasticsearch:           nil,
-			IdsOnlyInElasticsearchCount:      0,
-			IdsWithMismatchContent:           nil,
-			MismatchContentDetails:           nil,
-		},
+	response, err := validator.Validate()
+	if err != nil {
+		fmt.Println("error during validation")
+		fmt.Println(err)
+		os.Exit(1)
 	}
+
+	//TODO: retry n times, auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		fmt.Println("Unable to marshal response to JSON")
 		os.Exit(-1)
 	}
-
-	//time.Sleep(30 * time.Second)
 
 	fmt.Println(string(jsonResponse))
 	os.Exit(0)

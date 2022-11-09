@@ -1,10 +1,10 @@
-package internal
+package database
 
 import (
 	"fmt"
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
-	"time"
+	_ "github.com/lib/pq"
 )
 
 type DBClient struct {
@@ -20,6 +20,7 @@ type DBParams struct {
 	Port        string
 	SSLMode     string
 	SSLRootCert string
+	Table       string
 }
 
 func NewDBClient(config DBParams) (*DBClient, error) {
@@ -72,18 +73,24 @@ func (d *DBClient) Connect() (err error) {
 	return nil
 }
 
-func (d *DBClient) CountTable() (count int, err error) {
-	return
+func (d *DBClient) runQuery(query string) (*sqlx.Rows, error) {
+	if d.connection == nil {
+		return nil, errors.Wrap(errors.New("cannot run query because there is no database connection"), 0)
+	}
+	rows, err := d.connection.Queryx(query)
+
+	if err != nil {
+		return nil, errors.Wrap(fmt.Errorf("error executing query (%s) : %w", query, err), 0)
+	}
+
+	return rows, nil
 }
 
-func (d *DBClient) GetIDsByModifiedOn(startTime time.Time, endTime time.Time) (ids []string, err error) {
-	return
-}
-
-func (d *DBClient) GetIDsByIDList(ids []string) (responseIds []string, err error) {
-	return
-}
-
-func (d *DBClient) GetRowsByIDs(ids []string) (rows []interface{}, err error) {
-	return
+func (d *DBClient) closeRows(rows *sqlx.Rows) {
+	if rows != nil {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(errors.Wrap(err, 0))
+		}
+	}
 }

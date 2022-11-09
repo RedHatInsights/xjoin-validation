@@ -1,15 +1,15 @@
-package internal
+package elasticsearch
 
 import (
 	"crypto/tls"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/go-errors/errors"
 	"net/http"
-	"time"
 )
 
 type ESClient struct {
 	client *elasticsearch.Client
+	index  string
 }
 
 type ESParams struct {
@@ -21,9 +21,9 @@ type ESParams struct {
 
 func NewESClient(params ESParams) (*ESClient, error) {
 	cfg := elasticsearch.Config{
-		Addresses: []string{params.Url},
-		Username:  params.Username,
-		Password:  params.Password,
+		//Addresses: []string{params.Url}, //TODO change ELASTICSEARCH_URL env var name
+		Username: params.Username,
+		Password: params.Password,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: false,
@@ -37,23 +37,8 @@ func NewESClient(params ESParams) (*ESClient, error) {
 
 	esClient := ESClient{
 		client: client,
+		index:  params.Index,
 	}
 
 	return &esClient, nil
-}
-
-func (e *ESClient) CountIndex() (count int, err error) {
-	return -1, nil
-}
-
-func (e *ESClient) GetIDsByModifiedOn(startTime time.Time, endTime time.Time) (ids []string, err error) {
-	return
-}
-
-func (e *ESClient) GetIDsByIDList(ids []string) (responseIds []string, err error) {
-	return
-}
-
-func (e *ESClient) GetDocumentsByIDs(ids []string) (documents []interface{}, err error) {
-	return
 }
