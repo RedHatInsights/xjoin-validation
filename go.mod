@@ -1,14 +1,15 @@
 module github.com/RedHatInsights/xjoin-validation
 
-go 1.17
+go 1.18
 
 require (
 	github.com/elastic/go-elasticsearch/v7 v7.1.0
 	github.com/go-errors/errors v1.4.2
 	github.com/go-test/deep v1.0.7
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/lib/pq v1.10.7
 	github.com/redhatinsights/xjoin-operator v0.1.15
-	k8s.io/client-go v0.20.2
+	golang.org/x/exp v0.0.0-20221111094246-ab4555d3164f
 )
 
 require (
@@ -24,7 +25,6 @@ require (
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/googleapis/gnostic v0.5.1 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/lib/pq v1.10.7 // indirect
 	github.com/linkedin/goavro/v2 v2.9.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -39,7 +39,7 @@ require (
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
-	golang.org/x/sys v0.0.0-20201112073958-5cba982894dd // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	google.golang.org/appengine v1.6.6 // indirect
@@ -50,6 +50,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	k8s.io/api v0.20.2 // indirect
 	k8s.io/apimachinery v0.20.2 // indirect
+	k8s.io/client-go v0.20.2 // indirect
 	k8s.io/klog/v2 v2.4.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd // indirect
 	k8s.io/utils v0.0.0-20210111153108-fddb29f9d009 // indirect

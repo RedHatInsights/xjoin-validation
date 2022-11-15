@@ -11,10 +11,11 @@ import (
 )
 
 type ValidateContentResult struct {
-	MismatchCount     int                 `json:"mismatchCount,omitempty"`
-	MismatchRatio     float64             `json:"mismatchRatio,omitempty"`
-	ContentIsValid    bool                `json:"contentIsValid,omitempty"`
-	MismatchedRecords map[string][]string `json:"mismatchedRecords,omitempty"`
+	MismatchCount         int                 `json:"mismatchCount,omitempty"`
+	MismatchRatio         float64             `json:"mismatchRatio,omitempty"`
+	ContentIsValid        bool                `json:"contentIsValid,omitempty"`
+	MismatchedRecords     map[string][]string `json:"mismatchedRecords,omitempty"`
+	TotalRecordsValidated int                 `json:"totalRecordsValidated,omitempty"`
 }
 
 type idDiff struct {
@@ -23,25 +24,25 @@ type idDiff struct {
 }
 
 func (v *Validator) validateFullChunkSync(chunk []string) (allIdDiffs []idDiff, err error) {
-	//retrieve hosts from db and es
+	//retrieve records from db and es
 	esDocuments, err := v.ESClient.GetDocumentsByIDs(chunk)
 	if err != nil {
 		return allIdDiffs, errors.Wrap(err, 0)
 	}
 	if esDocuments == nil {
-		esDocuments = make([]interface{}, 0)
+		esDocuments = make([]map[string]interface{}, 0)
 	}
 
-	dbHosts, err := v.DBClient.GetRowsByIDs(chunk)
+	dbRecords, err := v.DBClient.GetRowsByIDs(chunk)
 	if err != nil {
 		return allIdDiffs, errors.Wrap(err, 0)
 	}
-	if dbHosts == nil {
-		dbHosts = make([]interface{}, 0)
+	if dbRecords == nil {
+		dbRecords = make([]map[string]interface{}, 0)
 	}
 
 	deep.MaxDiff = len(chunk) * 100
-	diffs := deep.Equal(dbHosts, esDocuments)
+	diffs := deep.Equal(dbRecords, esDocuments)
 
 	//build the change object for logging
 	for _, diff := range diffs {
@@ -120,7 +121,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 		return result, errors.Wrap(errors.New("Error during full validation"), 0)
 	}
 
-	//double check mismatched hosts to account for lag
+	//double check mismatched records to account for lag
 	var mismatchedIds []string
 	for d := range allIdDiffs {
 		mismatchedIds = append(mismatchedIds, d.id)
@@ -157,6 +158,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 		idx++
 	}
 	result.MismatchedRecords = mismatchedRecords
+	result.TotalRecordsValidated = len(v.dbIds)
 
 	return
 }

@@ -2,23 +2,26 @@ package elasticsearch
 
 import (
 	"crypto/tls"
+	"github.com/RedHatInsights/xjoin-validation/internal/avro"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/go-errors/errors"
 	"net/http"
 )
 
 type ESClient struct {
-	client   *elasticsearch.Client
-	index    string
-	rootNode string
+	client           *elasticsearch.Client
+	index            string
+	rootNode         string
+	parsedAvroSchema avro.ParsedAvroSchema
 }
 
 type ESParams struct {
-	Url      string
-	Username string
-	Password string
-	Index    string
-	RootNode string
+	Url              string
+	Username         string
+	Password         string
+	Index            string
+	RootNode         string
+	ParsedAvroSchema avro.ParsedAvroSchema
 }
 
 func NewESClient(params ESParams) (*ESClient, error) {
@@ -38,9 +41,10 @@ func NewESClient(params ESParams) (*ESClient, error) {
 	}
 
 	esClient := ESClient{
-		client:   client,
-		index:    params.Index,
-		rootNode: params.RootNode,
+		client:           client,
+		index:            params.Index,
+		rootNode:         params.RootNode,
+		parsedAvroSchema: params.ParsedAvroSchema,
 	}
 
 	return &esClient, nil

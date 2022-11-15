@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/RedHatInsights/xjoin-validation/internal/avro"
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -13,14 +14,15 @@ type DBClient struct {
 }
 
 type DBParams struct {
-	User        string
-	Password    string
-	Host        string
-	Name        string
-	Port        string
-	SSLMode     string
-	SSLRootCert string
-	Table       string
+	User             string
+	Password         string
+	Host             string
+	Name             string
+	Port             string
+	SSLMode          string
+	SSLRootCert      string
+	Table            string
+	ParsedAvroSchema avro.ParsedAvroSchema
 }
 
 func NewDBClient(config DBParams) (*DBClient, error) {

@@ -76,7 +76,7 @@ func (e *ESClient) getIDsQuery(index string, reqJSON []byte) (responseIds []stri
 		bodyBytes, _ := ioutil.ReadAll(searchRes.Body)
 
 		return responseIds, errors.Wrap(errors.New(fmt.Sprintf(
-			"invalid response code when getting hosts ids. StatusCode: %v, Body: %s",
+			"invalid response code when getting records ids. StatusCode: %v, Body: %s",
 			searchRes.StatusCode, bodyBytes)), 0)
 	}
 

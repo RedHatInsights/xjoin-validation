@@ -55,7 +55,7 @@ func formatIdsList(ids []string) (string, error) {
 	idsMap := make(map[string]interface{})
 	idsMap["IDs"] = ids
 
-	tmpl, err := template.New("host-ids").Parse(`{{range $idx, $id := .IDs}}'{{$id}}',{{end}}`)
+	tmpl, err := template.New("ids").Parse(`{{range $idx, $id := .IDs}}'{{$id}}',{{end}}`)
 	if err != nil {
 		return "", err
 	}

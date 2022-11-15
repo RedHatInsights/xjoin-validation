@@ -8,13 +8,13 @@ import (
 )
 
 type ValidateIDsResult struct {
-	InDBOnly              []string `json:"inDBOnly,omitempty"`
-	InESOnly              []string `json:"inESOnly,omitempty"`
-	TotalDBHostsRetrieved int      `json:"totalDBHostsRetrieved,omitempty"`
-	TotalESHostsRetrieved int      `json:"totalESHostsRetrieved,omitempty"`
-	MismatchCount         int      `json:"mismatchCount,omitempty"`
-	MismatchRatio         float64  `json:"mismatchRatio,omitempty"`
-	IDsAreValid           bool     `json:"idsAreValid,omitempty"`
+	InDBOnly                []string `json:"inDBOnly,omitempty"`
+	InESOnly                []string `json:"inESOnly,omitempty"`
+	TotalDBRecordsRetrieved int      `json:"totalDBRecordsRetrieved,omitempty"`
+	TotalESRecordsRetrieved int      `json:"totalESRecordsRetrieved,omitempty"`
+	MismatchCount           int      `json:"mismatchCount,omitempty"`
+	MismatchRatio           float64  `json:"mismatchRatio,omitempty"`
+	IDsAreValid             bool     `json:"idsAreValid,omitempty"`
 }
 
 func (v *Validator) validateIdChunk(dbIds []string, esIds []string) (mismatchCount int, inDBOnly []string, inESOnly []string) {
@@ -40,6 +40,7 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	if err != nil {
 		return result, errors.Wrap(err, 0)
 	}
+	v.dbIds = dbIds
 
 	esIds, err := v.ESClient.GetIDsByModifiedOn(startTime, endTime)
 	if err != nil {
@@ -48,10 +49,10 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 
 	mismatchCount, inDBOnly, inESOnly := v.validateIdChunk(dbIds, esIds)
 
-	//re-validate any mismatched hosts to check if they were invalid due to lag
-	//this can happen when the modified_on filter excludes hosts updated between retrieving hosts from the DB/ES
+	//re-validate any mismatched records to check if they were invalid due to lag
+	//this can happen when the modified_on filter excludes records updated between retrieving records from the DB/ES
 	if result.MismatchCount > 0 {
-		mismatchedIds := append(dbIds, esIds...)
+		mismatchedIds := append(inDBOnly, inESOnly...)
 		dbIds, err = v.DBClient.GetIDsByIDList(mismatchedIds)
 		if err != nil {
 			return result, errors.Wrap(err, 0)
@@ -69,8 +70,8 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	result.InESOnly = inESOnly
 	result.MismatchCount = mismatchCount
 	result.MismatchRatio = float64(mismatchCount) / math.Max(float64(len(dbIds)), 1)
-	result.TotalDBHostsRetrieved = len(dbIds)
-	result.TotalESHostsRetrieved = len(esIds)
+	result.TotalDBRecordsRetrieved = len(dbIds)
+	result.TotalESRecordsRetrieved = len(esIds)
 
 	if mismatchCount > 0 {
 		result.IDsAreValid = false
