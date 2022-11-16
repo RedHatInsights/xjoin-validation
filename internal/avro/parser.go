@@ -3,7 +3,7 @@ package avro
 import (
 	"encoding/json"
 	"github.com/go-errors/errors"
-	. "github.com/redhatinsights/xjoin-operator/controllers/avro"
+	"github.com/redhatinsights/xjoin-go-lib/pkg/avro"
 	"golang.org/x/exp/slices"
 )
 
@@ -14,15 +14,15 @@ type SchemaParser struct {
 
 type ParsedAvroSchema struct {
 	DatabaseColumns   []string
-	FullAvroSchema    Schema
-	IndexAvroSchema   Schema
+	FullAvroSchema    avro.Schema
+	IndexAvroSchema   avro.Schema
 	RootNode          string
 	TransformedFields []string
 }
 
 func (s *SchemaParser) Parse() (parsedSchema ParsedAvroSchema, err error) {
 	//unmarshal full avro schema
-	var fullAvroSchema Schema
+	var fullAvroSchema avro.Schema
 	err = json.Unmarshal([]byte(s.FullSchemaString), &fullAvroSchema)
 
 	if err != nil {
@@ -31,7 +31,7 @@ func (s *SchemaParser) Parse() (parsedSchema ParsedAvroSchema, err error) {
 	parsedSchema.FullAvroSchema = fullAvroSchema
 
 	//unmarshal index avro schema
-	var indexAvroSchema Schema
+	var indexAvroSchema avro.Schema
 	err = json.Unmarshal([]byte(s.IndexSchemaString), &indexAvroSchema)
 	if err != nil {
 		return parsedSchema, errors.Wrap(err, 0)
@@ -52,7 +52,7 @@ func (s *SchemaParser) Parse() (parsedSchema ParsedAvroSchema, err error) {
 	return
 }
 
-func (s *SchemaParser) parseDatabaseColumns(fullAvroSchema Schema, transformedFields []string) (dbColumns []string) {
+func (s *SchemaParser) parseDatabaseColumns(fullAvroSchema avro.Schema, transformedFields []string) (dbColumns []string) {
 	root := fullAvroSchema.Fields[0].Name
 
 	for _, field := range fullAvroSchema.Fields[0].Type[0].Fields {

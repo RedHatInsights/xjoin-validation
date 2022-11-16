@@ -3,7 +3,7 @@ package database
 import (
 	"bytes"
 	"fmt"
-	"github.com/redhatinsights/xjoin-operator/controllers/utils"
+	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	"text/template"
 	"time"
 )

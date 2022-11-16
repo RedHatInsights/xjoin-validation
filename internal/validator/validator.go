@@ -6,8 +6,8 @@ import (
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
 	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
 	"github.com/go-errors/errors"
-	"github.com/redhatinsights/xjoin-operator/api/v1alpha1"
-	"github.com/redhatinsights/xjoin-operator/controllers/utils"
+	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
+	validation "github.com/redhatinsights/xjoin-go-lib/pkg/validation"
 )
 
 type Validator struct {
@@ -19,7 +19,7 @@ type Validator struct {
 	dbIds             []string
 }
 
-func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error) {
+func (v *Validator) Validate() (response validation.ValidationResponse, err error) {
 	countResponse, err := v.ValidateCount()
 	if err != nil {
 		return response, errors.Wrap(err, 0)
@@ -30,11 +30,11 @@ func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error)
 			"%v discrepancies while counting. %v documents in elasticsearch. %v rows in database.",
 			countResponse.MismatchCount, countResponse.ESCount, countResponse.DBCount)
 
-		response = v1alpha1.ValidationResponse{
+		response = validation.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "count mismatch",
 			Message: message,
-			Details: v1alpha1.ResponseDetails{
+			Details: validation.ResponseDetails{
 				TotalMismatch: countResponse.MismatchCount,
 			},
 		}
@@ -58,11 +58,11 @@ func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error)
 			"%v ids did not match.",
 			idsResponse.MismatchCount)
 
-		response = v1alpha1.ValidationResponse{
+		response = validation.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "id mismatch",
 			Message: message,
-			Details: v1alpha1.ResponseDetails{
+			Details: validation.ResponseDetails{
 				TotalMismatch:                    idsResponse.MismatchCount,
 				IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
 				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
@@ -90,14 +90,14 @@ func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error)
 			"%v record's contents did not match.",
 			contentResponse.MismatchCount)
 
-		response = v1alpha1.ValidationResponse{
+		response = validation.ValidationResponse{
 			Result:  "invalid",
 			Reason:  "content mismatch",
 			Message: message,
-			Details: v1alpha1.ResponseDetails{
+			Details: validation.ResponseDetails{
 				TotalMismatch:          contentResponse.MismatchCount,
 				IdsWithMismatchContent: []string{},
-				MismatchContentDetails: []v1alpha1.MismatchContentDetails{},
+				MismatchContentDetails: []validation.MismatchContentDetails{},
 			},
 		}
 
@@ -110,7 +110,7 @@ func (v *Validator) Validate() (response v1alpha1.ValidationResponse, err error)
 		fmt.Println(string(contentResponseString))
 	}
 
-	return v1alpha1.ValidationResponse{
+	return validation.ValidationResponse{
 		Result: "valid",
 	}, nil
 }

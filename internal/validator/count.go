@@ -2,7 +2,7 @@ package validator
 
 import (
 	"github.com/go-errors/errors"
-	"github.com/redhatinsights/xjoin-operator/controllers/utils"
+	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	"math"
 )
 
