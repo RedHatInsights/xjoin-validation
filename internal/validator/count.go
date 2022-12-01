@@ -34,7 +34,7 @@ func (v *Validator) ValidateCount() (result ValidateCountResult, err error) {
 	}
 
 	result.MismatchCount = utils.Abs(dbCount - esCount)
-	result.MismatchRatio = float64(result.MismatchCount) / math.Max(float64(dbCount), 1)
+	result.MismatchRatio = math.Round(float64(result.MismatchCount)/math.Max(math.Max(float64(dbCount), float64(esCount)), 1)*100) / 100
 
 	return
 }

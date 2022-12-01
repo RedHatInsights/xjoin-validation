@@ -47,7 +47,7 @@ func main() {
 
 	//connect to Elasticsearch
 	esClient, err := NewESClient(ESParams{
-		Url:              os.Getenv("ELASTICSEARCH_URL"),
+		Url:              os.Getenv("ELASTICSEARCH_HOST_URL"),
 		Username:         os.Getenv("ELASTICSEARCH_USERNAME"),
 		Password:         os.Getenv("ELASTICSEARCH_PASSWORD"),
 		Index:            os.Getenv("ELASTICSEARCH_INDEX"),

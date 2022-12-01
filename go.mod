@@ -3,9 +3,11 @@ module github.com/RedHatInsights/xjoin-validation
 go 1.18
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/elastic/go-elasticsearch/v7 v7.1.0
 	github.com/go-errors/errors v1.4.2
 	github.com/go-test/deep v1.0.7
+	github.com/jarcoal/httpmock v1.2.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/onsi/ginkgo/v2 v2.5.0

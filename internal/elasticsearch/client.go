@@ -1,11 +1,9 @@
 package elasticsearch
 
 import (
-	"crypto/tls"
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/go-errors/errors"
-	"net/http"
 )
 
 type ESClient struct {
@@ -26,14 +24,14 @@ type ESParams struct {
 
 func NewESClient(params ESParams) (*ESClient, error) {
 	cfg := elasticsearch.Config{
-		//Addresses: []string{params.Url}, //TODO change ELASTICSEARCH_URL env var name
-		Username: params.Username,
-		Password: params.Password,
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: false,
-			},
-		},
+		Addresses: []string{params.Url},
+		Username:  params.Username,
+		Password:  params.Password,
+		//Transport: &http.Transport{
+		//	TLSClientConfig: &tls.Config{
+		//		InsecureSkipVerify: false,
+		//	},
+		//},
 	}
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {

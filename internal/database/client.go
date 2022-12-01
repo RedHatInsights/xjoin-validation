@@ -36,6 +36,14 @@ func NewDBClient(config DBParams) (*DBClient, error) {
 	return &dbClient, nil
 }
 
+func NewTestDBClient(connection *sqlx.DB, config DBParams) *DBClient {
+	dbClient := DBClient{
+		connection: connection,
+		Config:     config,
+	}
+	return &dbClient
+}
+
 func (d *DBClient) GetConnection() (connection *sqlx.DB, err error) {
 	connectionStringTemplate := "host=%s user=%s password=%s port=%s sslmode=%s"
 

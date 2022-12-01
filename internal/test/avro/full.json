@@ -1,0 +1,464 @@
+{
+  "type": "record",
+  "name": "Value",
+  "namespace": "hosts.1668000142462452703",
+  "fields": [
+    {
+      "name": "host",
+      "type": {
+        "type": "record",
+        "name": "xjoindatasourcepipeline.hosts.Value",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "type": "string",
+              "xjoin.type": "string",
+              "connect.version": 1,
+              "connect.name": "io.debezium.data.Uuid",
+              "xjoin.primary.key": true
+            }
+          },
+          {
+            "name": "account",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "string"
+              }
+            ]
+          },
+          {
+            "name": "display_name",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "string",
+                "xjoin.case": "insensitive"
+              }
+            ]
+          },
+          {
+            "name": "created_on",
+            "type": {
+              "type": "string",
+              "xjoin.type": "date_nanos",
+              "connect.version": 1,
+              "connect.name": "io.debezium.time.ZonedTimestamp"
+            }
+          },
+          {
+            "name": "modified_on",
+            "type": {
+              "type": "string",
+              "xjoin.type": "date_nanos",
+              "connect.version": 1,
+              "connect.name": "io.debezium.time.ZonedTimestamp"
+            }
+          },
+          {
+            "name": "facts",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "json",
+                "connect.version": 1,
+                "connect.name": "io.debezium.data.Json"
+              }
+            ]
+          },
+          {
+            "name": "tags",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "json",
+                "connect.version": 1,
+                "connect.name": "io.debezium.data.Json"
+              }
+            ]
+          },
+          {
+            "name": "canonical_facts",
+            "type": {
+              "type": "string",
+              "xjoin.type": "json",
+              "xjoin.fields": [
+                {
+                  "name": "fqdn",
+                  "type": {
+                    "type": "string",
+                    "xjoin.type": "string",
+                    "xjoin.case": "insensitive"
+                  }
+                },
+                {
+                  "name": "insights_id",
+                  "type": {
+                    "type": "string",
+                    "xjoin.type": "string"
+                  }
+                },
+                {
+                  "name": "satellite_id",
+                  "type": {
+                    "type": "string",
+                    "xjoin.type": "string"
+                  }
+                }
+              ],
+              "connect.version": 1,
+              "connect.name": "io.debezium.data.Json"
+            }
+          },
+          {
+            "name": "system_profile_facts",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "json",
+                "xjoin.fields": [
+                  {
+                    "name": "arch",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "os_release",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "os_kernel_version",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "infrastructure_type",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "infrastructure_vendor",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "sap_system",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "boolean",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "sap_sids",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "owner_id",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string"
+                    }
+                  },
+                  {
+                    "name": "insights_client_version",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "rhc_client_id",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string"
+                    }
+                  },
+                  {
+                    "name": "is_marketplace",
+                    "type": {
+                      "type": "boolean",
+                      "xjoin.type": "boolean",
+                      "xjoin.enumeration": true
+                    }
+                  },
+                  {
+                    "name": "operating_system",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "json",
+                      "xjoin.fields": [
+                        {
+                          "name": "major",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "byte",
+                            "xjoin.enumeration": true
+                          }
+                        },
+                        {
+                          "name": "minor",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "byte",
+                            "xjoin.enumeration": true
+                          }
+                        },
+                        {
+                          "name": "name",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "string",
+                            "xjoin.enumeration": true
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "ansible",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "json",
+                      "xjoin.fields": [
+                        {
+                          "name": "controller_version",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "string",
+                            "xjoin.enumeration": true
+                          }
+                        },
+                        {
+                          "name": "hub_version",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "string",
+                            "xjoin.enumeration": true
+                          }
+                        },
+                        {
+                          "name": "catalog_worker_version",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "string",
+                            "xjoin.enumeration": true
+                          }
+                        },
+                        {
+                          "name": "sso_version",
+                          "type": {
+                            "type": "string",
+                            "xjoin.type": "string",
+                            "xjoin.enumeration": true
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "host_type",
+                    "type": {
+                      "type": "string",
+                      "xjoin.type": "string",
+                      "xjoin.enumeration": true
+                    }
+                  }
+                ],
+                "connect.version": 1,
+                "connect.name": "io.debezium.data.Json"
+              }
+            ]
+          },
+          {
+            "name": "ansible_host",
+            "type": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "xjoin.type": "string",
+                "xjoin.enumeration": true
+              }
+            ]
+          },
+          {
+            "name": "stale_timestamp",
+            "type": {
+              "type": "string",
+              "xjoin.type": "date_nanos",
+              "connect.version": 1,
+              "connect.name": "io.debezium.time.ZonedTimestamp"
+            }
+          },
+          {
+            "name": "reporter",
+            "type": {
+              "type": "string",
+              "xjoin.type": "string",
+              "xjoin.enumeration": true
+            }
+          },
+          {
+            "name": "per_reporter_staleness",
+            "type": {
+              "type": "string",
+              "xjoin.type": "json",
+              "connect.version": 1,
+              "connect.name": "io.debezium.data.Json"
+            }
+          },
+          {
+            "name": "org_id",
+            "type": {
+              "type": "string",
+              "xjoin.type": "string"
+            }
+          },
+          {
+            "name": "tags_structured",
+            "type": {
+              "type": "array",
+              "name": "tags_structured",
+              "items": {
+                "type": "record",
+                "name": "children",
+                "fields": [
+                  {
+                    "name": "namespace",
+                    "type": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string",
+                        "xjoin.type": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "key",
+                    "type": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string",
+                        "xjoin.type": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "value",
+                    "type": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string",
+                        "xjoin.type": "string"
+                      }
+                    ]
+                  }
+                ],
+                "xjoin.type": "json"
+              },
+              "xjoin.type": "json"
+            }
+          },
+          {
+            "name": "tags_string",
+            "type": {
+              "type": "array",
+              "items": "string",
+              "xjoin.type": "array"
+            }
+          },
+          {
+            "name": "tags_search",
+            "type": {
+              "type": "array",
+              "items": "string",
+              "xjoin.type": "array"
+            }
+          }
+        ],
+        "xjoin.type": "reference"
+      }
+    }
+  ],
+  "xjoin.transformations": [
+    {
+      "transformation": "object_to_array_of_objects",
+      "input.field": "host.tags",
+      "output.field": "host.tags_structured",
+      "transformation.parameters": {
+        "keys": [
+          "namespace",
+          "key",
+          "value"
+        ]
+      }
+    },
+    {
+      "transformation": "object_to_array_of_strings",
+      "input.field": "host.tags",
+      "output.field": "host.tags_string",
+      "transformation.parameters": {
+        "delimiters": [
+          "/",
+          "/"
+        ]
+      }
+    },
+    {
+      "transformation": "object_to_array_of_strings",
+      "input.field": "host.tags",
+      "output.field": "host.tags_search",
+      "transformation.parameters": {
+        "delimiters": [
+          "/",
+          "="
+        ]
+      }
+    }
+  ]
+}
