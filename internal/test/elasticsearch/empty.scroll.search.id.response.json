@@ -1,0 +1,20 @@
+{
+  "_scroll_id": "test-scroll-id-1",
+  "took": 13,
+  "timed_out": false,
+  "terminated_early": false,
+  "_shards": {
+    "total": 2,
+    "successful": 2,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": []
+  }
+}

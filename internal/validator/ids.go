@@ -25,15 +25,13 @@ func (v *Validator) validateIdChunk(dbIds []string, esIds []string) (mismatchCou
 }
 
 func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
-	now := time.Now().UTC()
-
 	var startTime time.Time
 	if v.State == "INITIAL_SYNC" {
 		startTime = time.Unix(86400, 0) //24 hours since epoch
 	} else {
-		startTime = now.Add(-time.Duration(v.ValidationPeriod) * time.Minute)
+		startTime = v.Now.Add(-time.Duration(v.ValidationPeriod) * time.Minute)
 	}
-	endTime := now.Add(-time.Duration(v.ValidationLagComp) * time.Second)
+	endTime := v.Now.Add(-time.Duration(v.ValidationLagComp) * time.Second)
 
 	//validate chunk between startTime and endTime //TODO: can this rely on the presence of a modified_on field?
 	dbIds, err := v.DBClient.GetIDsByModifiedOn(startTime, endTime)

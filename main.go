@@ -9,6 +9,7 @@ import (
 	. "github.com/RedHatInsights/xjoin-validation/internal/validator"
 	"os"
 	"strings"
+	"time"
 )
 
 //currently assumes a single reference
@@ -66,6 +67,7 @@ func main() {
 		ESClient:          *esClient,
 		ValidationPeriod:  60,
 		ValidationLagComp: 0,
+		Now:               time.Now().UTC(),
 	}
 	response, err := validator.Validate()
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	validation "github.com/redhatinsights/xjoin-go-lib/pkg/validation"
+	"time"
 )
 
 type Validator struct {
@@ -15,6 +16,7 @@ type Validator struct {
 	ESClient
 	ValidationPeriod  int
 	ValidationLagComp int
+	Now               time.Time
 	State             string
 	dbIds             []string
 }
