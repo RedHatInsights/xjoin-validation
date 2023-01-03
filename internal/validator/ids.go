@@ -34,13 +34,15 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	endTime := v.Now.Add(-time.Duration(v.ValidationLagComp) * time.Second)
 
 	//validate chunk between startTime and endTime //TODO: can this rely on the presence of a modified_on field?
-	dbIds, err := v.DBClient.GetIDsByModifiedOn(startTime, endTime)
+	var dbIds []string
+	dbIds, err = v.DBClient.GetIDsByModifiedOn(startTime, endTime)
 	if err != nil {
 		return result, errors.Wrap(err, 0)
 	}
 	v.dbIds = dbIds
 
-	esIds, err := v.ESClient.GetIDsByModifiedOn(startTime, endTime)
+	var esIds []string
+	esIds, err = v.ESClient.GetIDsByModifiedOn(startTime, endTime)
 	if err != nil {
 		return result, errors.Wrap(err, 0)
 	}
@@ -67,7 +69,7 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	result.InDBOnly = inDBOnly
 	result.InESOnly = inESOnly
 	result.MismatchCount = mismatchCount
-	result.MismatchRatio = float64(mismatchCount) / math.Max(float64(len(dbIds)), 1)
+	result.MismatchRatio = float64(mismatchCount) / math.Max(float64(len(dbIds))+float64(len(result.InESOnly)), 1)
 	result.TotalDBRecordsRetrieved = len(dbIds)
 	result.TotalESRecordsRetrieved = len(esIds)
 

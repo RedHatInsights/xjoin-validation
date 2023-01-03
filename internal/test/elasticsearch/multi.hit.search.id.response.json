@@ -1,0 +1,62 @@
+{
+  "_scroll_id": "test-scroll-id-1",
+  "took": 23,
+  "timed_out": false,
+  "_shards": {
+    "total": 3,
+    "successful": 3,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 3,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "mockindex",
+        "_type": "_doc",
+        "_id": "in.both",
+        "_score": null,
+        "_source": {
+          "host": {
+            "id": "in.both"
+          }
+        },
+        "sort": [
+          0
+        ]
+      },
+      {
+        "_index": "mockindex",
+        "_type": "_doc",
+        "_id": "es.only.1",
+        "_score": null,
+        "_source": {
+          "host": {
+            "id": "es.only.1"
+          }
+        },
+        "sort": [
+          0
+        ]
+      },
+      {
+        "_index": "mockindex",
+        "_type": "_doc",
+        "_id": "es.only.2",
+        "_score": null,
+        "_source": {
+          "host": {
+            "id": "es.only.2"
+          }
+        },
+        "sort": [
+          0
+        ]
+      }
+    ]
+  }
+}
