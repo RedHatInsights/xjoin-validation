@@ -116,3 +116,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 		Result: "valid",
 	}, nil
 }
+
+func (v *Validator) SetDBIDs(dbIds []string) {
+	v.dbIds = dbIds
+}

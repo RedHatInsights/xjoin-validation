@@ -39,12 +39,12 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/one.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/one.hit.response")))
 
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/empty.scroll.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
@@ -78,7 +78,7 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/zero.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/zero.hit.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
@@ -112,7 +112,7 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/zero.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/zero.hit.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
@@ -144,12 +144,12 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/one.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/one.hit.response")))
 
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/empty.scroll.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
@@ -183,12 +183,12 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/one.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/one.hit.response")))
 
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/empty.scroll.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
@@ -222,12 +222,12 @@ var _ = Describe("ID validation", func() {
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/multi.hit.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/multi.hit.response")))
 
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
-				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/empty.scroll.search.id.response")))
+				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
