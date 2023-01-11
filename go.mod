@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/JeremyLoy/config v1.5.0
 	github.com/elastic/go-elasticsearch/v7 v7.1.0
 	github.com/go-errors/errors v1.4.2
 	github.com/go-test/deep v1.0.7

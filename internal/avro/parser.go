@@ -8,14 +8,12 @@ import (
 )
 
 type SchemaParser struct {
-	FullSchemaString  string
-	IndexSchemaString string
+	FullSchemaString string
 }
 
 type ParsedAvroSchema struct {
 	DatabaseColumns   []string
 	FullAvroSchema    avro.Schema
-	IndexAvroSchema   avro.Schema
 	RootNode          string
 	TransformedFields []string
 }
@@ -30,16 +28,11 @@ func (s *SchemaParser) Parse() (parsedSchema ParsedAvroSchema, err error) {
 	}
 	parsedSchema.FullAvroSchema = fullAvroSchema
 
-	//unmarshal index avro schema
-	var indexAvroSchema avro.Schema
-	err = json.Unmarshal([]byte(s.IndexSchemaString), &indexAvroSchema)
-	if err != nil {
-		return parsedSchema, errors.Wrap(err, 0)
-	}
-	parsedSchema.IndexAvroSchema = indexAvroSchema
-
 	//parse root node
-	parsedSchema.RootNode = parsedSchema.IndexAvroSchema.Fields[0].Name
+	if len(parsedSchema.FullAvroSchema.Fields) == 0 {
+		return parsedSchema, errors.Wrap(errors.New("root field missing from FullAvroSchema"), 0)
+	}
+	parsedSchema.RootNode = parsedSchema.FullAvroSchema.Fields[0].Name
 
 	//parse transformed field names
 	for _, transformation := range fullAvroSchema.Transformations {

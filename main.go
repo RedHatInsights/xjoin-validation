@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/JeremyLoy/config"
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
 	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
@@ -12,14 +13,49 @@ import (
 	"time"
 )
 
+type DatabaseConnectionInfo struct {
+	Name     string `json:"name"`
+	Hostname string `json:"hostname"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Port     string `json:"port"`
+	Table    string `json:"table"`
+	SSLMode  string `json:"sslMode"`
+}
+
+type Config struct {
+	ElasticsearchHostUrl  string `config:"ELASTICSEARCH_HOST_URL"`
+	ElasticsearchIndex    string `config:"ELASTICSEARCH_INDEX"`
+	ElasticsearchPassword string `config:"ELASTICSEARCH_PASSWORD"`
+	ElasticsearchUsername string `config:"ELASTICSEARCH_USERNAME"`
+	DatabaseConnections   string `config:"DATABASE_CONNECTIONS"`
+	FullAvroSchema        string `config:"FULL_AVRO_SCHEMA"`
+}
+
 //currently assumes a single reference
 func main() {
 	fmt.Println("Starting validation...")
 
+	//load config
+	var c Config
+	err := config.From("config/dev.config").FromEnv().To(&c)
+	if err != nil {
+		fmt.Println("error parsing config")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	var dbConnectionInfo map[string]DatabaseConnectionInfo
+	err = json.Unmarshal([]byte(c.DatabaseConnections), &dbConnectionInfo)
+	if err != nil {
+		fmt.Println("error parsing DatabaseConnections json")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	//parse avro schema
 	schemaParser := avro.SchemaParser{
-		FullSchemaString:  os.Getenv("FULL_AVRO_SCHEMA"),
-		IndexSchemaString: os.Getenv("INDEX_AVRO_SCHEMA"),
+		FullSchemaString: c.FullAvroSchema,
 	}
 	parsedSchema, err := schemaParser.Parse()
 	if err != nil {
@@ -31,13 +67,13 @@ func main() {
 	//connect to database
 	datasourceName := strings.Split(parsedSchema.FullAvroSchema.Namespace, ".")[0]
 	dbClient, err := NewDBClient(DBParams{
-		User:             os.Getenv(datasourceName + "_DB_USERNAME"),
-		Password:         os.Getenv(datasourceName + "_DB_PASSWORD"),
-		Host:             os.Getenv(datasourceName + "_DB_HOSTNAME"),
-		Name:             os.Getenv(datasourceName + "_DB_NAME"),
-		Port:             os.Getenv(datasourceName + "_DB_PORT"),
-		Table:            os.Getenv(datasourceName + "_DB_TABLE"),
-		SSLMode:          "disable",
+		User:             dbConnectionInfo[datasourceName].Username,
+		Password:         dbConnectionInfo[datasourceName].Password,
+		Host:             dbConnectionInfo[datasourceName].Hostname,
+		Name:             dbConnectionInfo[datasourceName].Name,
+		Port:             dbConnectionInfo[datasourceName].Port,
+		Table:            dbConnectionInfo[datasourceName].Table,
+		SSLMode:          dbConnectionInfo[datasourceName].SSLMode,
 		ParsedAvroSchema: parsedSchema,
 	})
 	if err != nil {
@@ -48,10 +84,10 @@ func main() {
 
 	//connect to Elasticsearch
 	esClient, err := NewESClient(ESParams{
-		Url:              os.Getenv("ELASTICSEARCH_HOST_URL"),
-		Username:         os.Getenv("ELASTICSEARCH_USERNAME"),
-		Password:         os.Getenv("ELASTICSEARCH_PASSWORD"),
-		Index:            os.Getenv("ELASTICSEARCH_INDEX"),
+		Url:              c.ElasticsearchHostUrl,
+		Username:         c.ElasticsearchUsername,
+		Password:         c.ElasticsearchPassword,
+		Index:            c.ElasticsearchIndex,
 		RootNode:         parsedSchema.RootNode,
 		ParsedAvroSchema: parsedSchema,
 	})

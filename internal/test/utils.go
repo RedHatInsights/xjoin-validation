@@ -41,8 +41,7 @@ func BeforeEach() TestEnv {
 
 	//parse avro schema
 	schemaParser := avro.SchemaParser{
-		FullSchemaString:  LoadTestDataFile("avro/full"),
-		IndexSchemaString: LoadTestDataFile("avro/index"),
+		FullSchemaString: LoadTestDataFile("avro/full"),
 	}
 	parsedSchema, err := schemaParser.Parse()
 	Expect(err).ToNot(HaveOccurred())
