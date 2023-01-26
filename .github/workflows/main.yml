@@ -1,0 +1,7 @@
+- name: Commitsar Action
+  # You may pin to the exact commit or the version.
+  # uses: aevea/commitsar@133f40b688de0089c3304bebd5e32be36d6dd055
+  uses: aevea/commitsar@v0.20.1
+  with:
+    # Path of the Commitsar config file
+    config: # optional
