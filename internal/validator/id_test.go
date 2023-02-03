@@ -2,14 +2,14 @@ package validator_test
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/RedHatInsights/xjoin-validation/internal/test"
 	. "github.com/RedHatInsights/xjoin-validation/internal/validator"
 	"github.com/jarcoal/httpmock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
-	"time"
 )
 
 var _ = Describe("ID validation", func() {
@@ -33,7 +33,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("1234"))
 
 			httpmock.RegisterResponder(
@@ -72,7 +72,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}))
 
 			httpmock.RegisterResponder(
@@ -106,7 +106,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("1234"))
 
 			httpmock.RegisterResponder(
@@ -138,7 +138,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}))
 
 			httpmock.RegisterResponder(
@@ -177,7 +177,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("5678"))
 
 			httpmock.RegisterResponder(
@@ -216,7 +216,7 @@ var _ = Describe("ID validation", func() {
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
-				startTime.Format(utils.TimeFormat()), endTime.Format(utils.TimeFormat()))).
+				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("in.both").AddRow("db.only.1").AddRow("db.only.2"))
 
 			httpmock.RegisterResponder(

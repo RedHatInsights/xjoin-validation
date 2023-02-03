@@ -15,7 +15,7 @@ import (
 func (e *ESClient) GetIDsByModifiedOn(start time.Time, end time.Time) (ids []string, err error) {
 	modifiedOnField := e.rootNode + ".modified_on" //TODO: parse modified_on field name from avro schema
 	reqJSON := []byte(fmt.Sprintf(`{"query":{"range":{"%s":{"lt":"%s","gt":"%s"}}}}`,
-		modifiedOnField, end.Format(utils.TimeFormat()), start.Format(utils.TimeFormat())))
+		modifiedOnField, end.UTC().Format(time.RFC3339Nano), start.UTC().Format(time.RFC3339Nano)))
 
 	return e.getIDsQuery(e.index, reqJSON)
 }

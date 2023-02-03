@@ -3,7 +3,6 @@ package database
 import (
 	"bytes"
 	"fmt"
-	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	"text/template"
 	"time"
 )
@@ -12,7 +11,7 @@ func (d *DBClient) GetIDsByModifiedOn(start time.Time, end time.Time) (ids []str
 	//TODO: parse name of id and modified_on fields from avro schema
 	query := fmt.Sprintf(
 		`SELECT id FROM %s WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id `,
-		d.Config.Table, start.Format(utils.TimeFormat()), end.Format(utils.TimeFormat()))
+		d.Config.Table, start.Format(time.RFC3339Nano), end.Format(time.RFC3339Nano))
 
 	return d.queryIds(query)
 }
