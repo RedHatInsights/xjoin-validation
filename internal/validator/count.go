@@ -1,9 +1,9 @@
 package validator
 
 import (
-	"github.com/go-errors/errors"
-	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	"math"
+
+	"github.com/go-errors/errors"
 )
 
 type ValidateCountResult struct {
@@ -33,8 +33,9 @@ func (v *Validator) ValidateCount() (result ValidateCountResult, err error) {
 		result.CountIsValid = true
 	}
 
-	result.MismatchCount = utils.Abs(dbCount - esCount)
-	result.MismatchRatio = math.Round(float64(result.MismatchCount)/math.Max(math.Max(float64(dbCount), float64(esCount)), 1)*100) / 100
+	diff := math.Abs(float64(dbCount - esCount))
+	result.MismatchCount = int(diff)
+	result.MismatchRatio = math.Round(diff/math.Max(math.Max(float64(dbCount), float64(esCount)), 1)*100) / 100
 
 	return
 }
