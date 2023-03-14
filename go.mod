@@ -13,7 +13,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/onsi/ginkgo/v2 v2.5.0
 	github.com/onsi/gomega v1.24.0
-	github.com/redhatinsights/xjoin-go-lib v0.0.3
+	github.com/redhatinsights/xjoin-go-lib v0.0.6-0.20230315100834-0b032a3409e5
 	golang.org/x/exp v0.0.0-20221111094246-ab4555d3164f
 )
 
