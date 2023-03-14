@@ -3,12 +3,13 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
 	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
 	"github.com/go-errors/errors"
 	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
 	validation "github.com/redhatinsights/xjoin-go-lib/pkg/validation"
-	"time"
 )
 
 type Validator struct {
@@ -33,7 +34,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			countResponse.MismatchCount, countResponse.ESCount, countResponse.DBCount)
 
 		response = validation.ValidationResponse{
-			Result:  "invalid",
+			Result:  validation.ValidationInvalid,
 			Reason:  "count mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
@@ -61,7 +62,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			idsResponse.MismatchCount)
 
 		response = validation.ValidationResponse{
-			Result:  "invalid",
+			Result:  validation.ValidationInvalid,
 			Reason:  "id mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
@@ -93,7 +94,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			contentResponse.MismatchCount)
 
 		response = validation.ValidationResponse{
-			Result:  "invalid",
+			Result:  validation.ValidationInvalid,
 			Reason:  "content mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
@@ -113,7 +114,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 	}
 
 	return validation.ValidationResponse{
-		Result: "valid",
+		Result: validation.ValidationValid,
 	}, nil
 }
 
