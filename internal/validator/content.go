@@ -72,8 +72,6 @@ func (v *Validator) validateFullChunkAsync(chunk []string, allIdDiffs chan idDif
 	for _, diff := range diffs {
 		allIdDiffs <- diff
 	}
-
-	return
 }
 
 func (v *Validator) ValidateContent() (result ValidateContentResult, err error) {
