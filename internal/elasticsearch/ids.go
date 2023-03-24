@@ -92,7 +92,7 @@ func (e *ESClient) getIDsQuery(index string, reqJSON []byte) (responseIds []stri
 	moreHits := true
 	scrollID := searchJSON.ScrollID
 
-	for moreHits == true {
+	for moreHits {
 		scrollReq := esapi.ScrollRequest{
 			Scroll:   time.Duration(1) * time.Minute,
 			ScrollID: scrollID,
