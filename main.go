@@ -142,7 +142,7 @@ func main() {
 	//TODO: retry n times, auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
 	i := 0
 	for i < c.NumAttempts {
-		fmt.Println(fmt.Sprintf("Validation attempt %v", i))
+		fmt.Printf("Validation attempt %v", i)
 		validator := Validator{
 			DBClient:          *dbClient,
 			ESClient:          *esClient,
