@@ -31,6 +31,8 @@ type Config struct {
 	ElasticsearchUsername string `config:"ELASTICSEARCH_USERNAME"`
 	DatabaseConnections   string `config:"DATABASE_CONNECTIONS"`
 	FullAvroSchema        string `config:"FULL_AVRO_SCHEMA"`
+	NumAttempts           int    `config:"NUM_ATTEMPTS"`
+	Interval              int    `config:"INTERVAL"`
 }
 
 func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo DatabaseConnectionInfo, err error) {
@@ -137,28 +139,37 @@ func main() {
 	}
 
 	//run validation
-	validator := Validator{
-		DBClient:          *dbClient,
-		ESClient:          *esClient,
-		ValidationPeriod:  60,
-		ValidationLagComp: 0,
-		Now:               time.Now().UTC(),
-	}
-	response, err := validator.Validate()
-	if err != nil {
-		fmt.Println("error during validation")
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	//TODO: retry n times, auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
+	i := 0
+	for i < c.NumAttempts {
+		fmt.Println(fmt.Sprintf("Validation attempt %v", i))
+		validator := Validator{
+			DBClient:          *dbClient,
+			ESClient:          *esClient,
+			ValidationPeriod:  60,
+			ValidationLagComp: 0,
+			Now:               time.Now().UTC(),
+		}
+		response, err := validator.Validate()
+		if err != nil {
+			fmt.Println("error during validation")
+			fmt.Println(err)
+			os.Exit(1)
+		}
 
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		fmt.Println("Unable to marshal response to JSON")
-		os.Exit(-1)
+		jsonResponse, err := json.Marshal(response)
+		if err != nil {
+			fmt.Println("Unable to marshal response to JSON")
+			os.Exit(-1)
+		}
+		fmt.Println(string(jsonResponse))
+
+		if response.Result == "valid" {
+			break
+		} else {
+			time.Sleep(time.Duration(c.Interval) * time.Second)
+			i += 1
+		}
 	}
-
-	fmt.Println(string(jsonResponse))
 	os.Exit(0)
 }
