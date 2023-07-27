@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
+	logger "github.com/RedHatInsights/xjoin-validation/internal/log"
 	"github.com/elastic/go-elasticsearch/v7"
 	"github.com/go-errors/errors"
 )
@@ -11,6 +12,7 @@ type ESClient struct {
 	index            string
 	rootNode         string
 	parsedAvroSchema avro.ParsedAvroSchema
+	log              logger.Log
 }
 
 type ESParams struct {
@@ -20,6 +22,7 @@ type ESParams struct {
 	Index            string
 	RootNode         string
 	ParsedAvroSchema avro.ParsedAvroSchema
+	Log              logger.Log
 }
 
 func NewESClient(params ESParams) (*ESClient, error) {
@@ -43,6 +46,7 @@ func NewESClient(params ESParams) (*ESClient, error) {
 		index:            params.Index,
 		rootNode:         params.RootNode,
 		parsedAvroSchema: params.ParsedAvroSchema,
+		log:              params.Log,
 	}
 
 	return &esClient, nil

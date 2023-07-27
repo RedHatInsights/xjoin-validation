@@ -3,6 +3,7 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
+	logger "github.com/RedHatInsights/xjoin-validation/internal/log"
 	"time"
 
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
@@ -20,6 +21,7 @@ type Validator struct {
 	Now               time.Time
 	State             string
 	dbIds             []string
+	Log               logger.Log
 }
 
 func (v *Validator) Validate() (response validation.ValidationResponse, err error) {

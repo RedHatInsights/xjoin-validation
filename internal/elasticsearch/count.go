@@ -17,6 +17,8 @@ func (e *ESClient) CountIndex() (count int, err error) {
 		Index: []string{e.index},
 	}
 
+	e.log.Debug("Elasticsearch count request", "request", req)
+
 	ctx, cancel := utils.DefaultContext()
 	defer cancel()
 	res, err := req.Do(ctx, e.client)
@@ -30,6 +32,8 @@ func (e *ESClient) CountIndex() (count int, err error) {
 	if err != nil {
 		return count, errors.Wrap(err, 0)
 	}
+
+	e.log.Debug("Elasticsearch count response", "response", res, "body", countIDsResponse)
 
 	return countIDsResponse.Count, nil
 }

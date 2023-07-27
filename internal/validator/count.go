@@ -15,6 +15,8 @@ type ValidateCountResult struct {
 }
 
 func (v *Validator) ValidateCount() (result ValidateCountResult, err error) {
+	v.Log.Debug("Starting count validation")
+
 	dbCount, err := v.DBClient.CountTable()
 	if err != nil {
 		return result, errors.Wrap(err, 0)

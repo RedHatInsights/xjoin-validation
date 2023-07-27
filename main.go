@@ -7,6 +7,7 @@ import (
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
 	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
+	logger "github.com/RedHatInsights/xjoin-validation/internal/log"
 	. "github.com/RedHatInsights/xjoin-validation/internal/validator"
 	"github.com/go-errors/errors"
 	"os"
@@ -71,14 +72,19 @@ func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo Dat
 
 //currently assumes a single reference
 func main() {
-	fmt.Println("Starting validation...")
+	log, err := logger.NewLogger()
+	if err != nil {
+		fmt.Println("Unable to initialize logger")
+		os.Exit(1)
+	}
+
+	log.Info("Starting validation...")
 
 	//load config
 	var c Config
-	err := config.From("config/dev.config").FromEnv().To(&c)
+	err = config.From("config/dev.config").FromEnv().To(&c)
 	if err != nil {
-		fmt.Println("error parsing config")
-		fmt.Println(err)
+		log.Error(errors.Wrap(err, 0), "error parsing config")
 		os.Exit(1)
 	}
 
@@ -88,22 +94,22 @@ func main() {
 	}
 	parsedSchema, err := schemaParser.Parse()
 	if err != nil {
-		fmt.Println("error parsing avro schemas")
-		fmt.Println(err)
+		log.Error(errors.Wrap(err, 0), "error parsing avro schemas")
 		os.Exit(1)
 	}
 
 	//connect to database
 	if len(strings.Split(parsedSchema.FullAvroSchema.Namespace, ".")) < 2 {
-		fmt.Println("Invalid FullAvroSchema.Namespace value. Expected '.' delimited string, e.g. xjoinindexpipeline.hosts.1")
+		log.Error(errors.Wrap(errors.New(
+			"Invalid FullAvroSchema.Namespace value. Expected '.' delimited string, e.g. xjoinindexpipeline.hosts.1"), 0),
+			"Invalid FullAvroSchema")
 		os.Exit(1)
 	}
 
 	datasourceName := strings.Split(parsedSchema.FullAvroSchema.Namespace, ".")[1]
 	dbConnectionInfo, err := parseDatabaseConnectionFromEnv(datasourceName)
 	if err != nil {
-		fmt.Println("error parsing database connection from environment variables")
-		fmt.Println(err)
+		log.Error(errors.Wrap(err, 0), "error parsing database connection from environment variables")
 		os.Exit(1)
 	}
 
@@ -118,8 +124,7 @@ func main() {
 		ParsedAvroSchema: parsedSchema,
 	})
 	if err != nil {
-		fmt.Println("error connecting to database")
-		fmt.Println(err)
+		log.Error(errors.Wrap(err, 0), "error connecting to database")
 		os.Exit(1)
 	}
 
@@ -131,36 +136,36 @@ func main() {
 		Index:            c.ElasticsearchIndex,
 		RootNode:         parsedSchema.RootNode,
 		ParsedAvroSchema: parsedSchema,
+		Log:              log,
 	})
 	if err != nil {
-		fmt.Println("error connecting to elasticsearch")
-		fmt.Println(err)
+		log.Error(errors.Wrap(err, 0), "error connecting to elasticsearch")
 		os.Exit(1)
 	}
 
 	//run validation
-	//TODO: retry n times, auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
+	//TODO: auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
 	i := 0
 	for i < c.NumAttempts {
-		fmt.Printf("Validation attempt %v\n", i)
+		log.Info("Validation attempt %v", i)
 		validator := Validator{
 			DBClient:          *dbClient,
 			ESClient:          *esClient,
 			ValidationPeriod:  60,
 			ValidationLagComp: 0,
 			Now:               time.Now().UTC(),
+			Log:               log,
 		}
 		response, err := validator.Validate()
 		if err != nil {
-			fmt.Println("error during validation")
-			fmt.Println(err)
+			log.Error(errors.Wrap(err, 0), "error during validation")
 			os.Exit(1)
 		}
 
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			fmt.Println("Unable to marshal response to JSON")
-			os.Exit(-1)
+			log.Error(errors.Wrap(err, 0), "unable to marshal response to JSON")
+			os.Exit(1)
 		}
 		fmt.Println(string(jsonResponse))
 
