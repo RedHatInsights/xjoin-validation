@@ -147,7 +147,7 @@ func main() {
 	//TODO: auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
 	i := 0
 	for i < c.NumAttempts {
-		log.Info("Validation attempt %v", i)
+		log.Info("Validation attempt", "number", i)
 		validator := Validator{
 			DBClient:          *dbClient,
 			ESClient:          *esClient,
