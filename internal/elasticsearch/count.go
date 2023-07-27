@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/go-errors/errors"
 	"github.com/redhatinsights/xjoin-go-lib/pkg/utils"
@@ -24,6 +25,11 @@ func (e *ESClient) CountIndex() (count int, err error) {
 	res, err := req.Do(ctx, e.client)
 	if err != nil {
 		return count, errors.Wrap(err, 0)
+	}
+
+	if res.StatusCode >= 300 {
+		return count, errors.Wrap(fmt.Errorf(
+			"invalid response code when counting index: %v", res.StatusCode), 0)
 	}
 
 	var countIDsResponse CountIDsResponse
