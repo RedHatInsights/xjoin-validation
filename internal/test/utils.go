@@ -67,12 +67,12 @@ func BeforeEach() TestEnv {
 	Expect(err).ToNot(HaveOccurred())
 
 	validator := Validator{
-		DBClient:          *dbClient,
-		ESClient:          *esClient,
-		ValidationPeriod:  100,
-		ValidationLagComp: 0,
-		State:             "new",
-		Now:               time.Now(),
+		DBClient:   *dbClient,
+		ESClient:   *esClient,
+		PeriodMin:  100,
+		LagCompSec: 0,
+		State:      "new",
+		Now:        time.Now(),
 	}
 
 	return TestEnv{

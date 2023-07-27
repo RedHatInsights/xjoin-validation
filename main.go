@@ -26,14 +26,17 @@ type DatabaseConnectionInfo struct {
 }
 
 type Config struct {
-	ElasticsearchHostUrl  string `config:"ELASTICSEARCH_HOST_URL"`
-	ElasticsearchIndex    string `config:"ELASTICSEARCH_INDEX"`
-	ElasticsearchPassword string `config:"ELASTICSEARCH_PASSWORD"`
-	ElasticsearchUsername string `config:"ELASTICSEARCH_USERNAME"`
-	DatabaseConnections   string `config:"DATABASE_CONNECTIONS"`
-	FullAvroSchema        string `config:"FULL_AVRO_SCHEMA"`
-	NumAttempts           int    `config:"NUM_ATTEMPTS"`
-	Interval              int    `config:"INTERVAL"`
+	ElasticsearchHostUrl       string `config:"ELASTICSEARCH_HOST_URL"`
+	ElasticsearchIndex         string `config:"ELASTICSEARCH_INDEX"`
+	ElasticsearchPassword      string `config:"ELASTICSEARCH_PASSWORD"`
+	ElasticsearchUsername      string `config:"ELASTICSEARCH_USERNAME"`
+	DatabaseConnections        string `config:"DATABASE_CONNECTIONS"`
+	FullAvroSchema             string `config:"FULL_AVRO_SCHEMA"`
+	NumAttempts                int    `config:"NUM_ATTEMPTS"`
+	Interval                   int    `config:"INTERVAL"`
+	LagCompSec                 int    `config:"LAG_COMP_SEC"`
+	PeriodMin                  int    `config:"PERIOD_MIN"`
+	InvalidThresholdPercentage int    `config:"INVALID_THRESHOLD_PERCENTAGE"`
 }
 
 func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo DatabaseConnectionInfo, err error) {
@@ -157,12 +160,13 @@ func main() {
 	for i < c.NumAttempts {
 		log.Info("Validation attempt", "number", i)
 		validator := Validator{
-			DBClient:          *dbClient,
-			ESClient:          *esClient,
-			ValidationPeriod:  60,
-			ValidationLagComp: 0,
-			Now:               time.Now().UTC(),
-			Log:               log,
+			DBClient:                   *dbClient,
+			ESClient:                   *esClient,
+			PeriodMin:                  c.PeriodMin,
+			LagCompSec:                 c.LagCompSec,
+			Now:                        time.Now().UTC(),
+			Log:                        log,
+			InvalidThresholdPercentage: c.InvalidThresholdPercentage,
 		}
 		response, err := validator.Validate()
 		if err != nil {

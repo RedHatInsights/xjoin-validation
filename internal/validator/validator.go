@@ -16,12 +16,13 @@ import (
 type Validator struct {
 	DBClient
 	ESClient
-	ValidationPeriod  int
-	ValidationLagComp int
-	Now               time.Time
-	State             string
-	dbIds             []string
-	Log               logger.Log
+	PeriodMin                  int
+	LagCompSec                 int
+	InvalidThresholdPercentage int
+	Now                        time.Time
+	State                      string
+	dbIds                      []string
+	Log                        logger.Log
 }
 
 func (v *Validator) Validate() (response validation.ValidationResponse, err error) {

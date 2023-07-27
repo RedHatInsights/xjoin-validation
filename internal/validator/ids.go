@@ -29,9 +29,9 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	if v.State == "INITIAL_SYNC" {
 		startTime = time.Unix(86400, 0) //24 hours since epoch
 	} else {
-		startTime = v.Now.Add(-time.Duration(v.ValidationPeriod) * time.Minute)
+		startTime = v.Now.Add(-time.Duration(v.PeriodMin) * time.Minute)
 	}
-	endTime := v.Now.Add(-time.Duration(v.ValidationLagComp) * time.Second)
+	endTime := v.Now.Add(-time.Duration(v.LagCompSec) * time.Second)
 
 	//validate chunk between startTime and endTime //TODO: can this rely on the presence of a modified_on field?
 	var dbIds []string

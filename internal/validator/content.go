@@ -142,8 +142,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 	//determine if the data is valid within the threshold
 	result.MismatchCount = len(diffsById)
 	result.MismatchRatio = float64(result.MismatchCount) / math.Max(float64(len(v.dbIds)), 1)
-	//result.ContentIsValid = (result.MismatchRatio * 100) <= float64(i.GetValidationPercentageThreshold())
-	result.ContentIsValid = result.MismatchCount == 0
+	result.ContentIsValid = (result.MismatchRatio * 100) <= float64(v.InvalidThresholdPercentage)
 
 	//log at most 50 invalid systems
 	mismatchedRecords := make(map[string][]string)

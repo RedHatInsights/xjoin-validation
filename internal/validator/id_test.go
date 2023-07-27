@@ -28,8 +28,8 @@ var _ = Describe("ID validation", func() {
 
 	Context("should be valid", func() {
 		It("when database and elasticsearch IDs are the same", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
@@ -67,8 +67,8 @@ var _ = Describe("ID validation", func() {
 		})
 
 		It("when there are no hosts in time range", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
@@ -101,8 +101,8 @@ var _ = Describe("ID validation", func() {
 
 	Context("should be invalid", func() {
 		It("when the DB has more IDs than ES", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
@@ -133,8 +133,8 @@ var _ = Describe("ID validation", func() {
 		})
 
 		It("when ES has more IDs than the DB", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
@@ -172,8 +172,8 @@ var _ = Describe("ID validation", func() {
 		})
 
 		It("when ES and DB have mismatched IDs", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
@@ -211,8 +211,8 @@ var _ = Describe("ID validation", func() {
 		})
 
 		It("when ES and DB have complex mismatched IDs", func() {
-			startTime := validator.Now.Add(-time.Duration(validator.ValidationPeriod) * time.Minute)
-			endTime := validator.Now.Add(-time.Duration(validator.ValidationLagComp) * time.Second)
+			startTime := validator.Now.Add(-time.Duration(validator.PeriodMin) * time.Minute)
+			endTime := validator.Now.Add(-time.Duration(validator.LagCompSec) * time.Second)
 
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
