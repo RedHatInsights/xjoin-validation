@@ -82,10 +82,18 @@ func main() {
 
 	//load config
 	var c Config
-	err = config.From("config/dev.config").FromEnv().To(&c)
-	if err != nil {
-		log.Error(errors.Wrap(err, 0), "error parsing config")
-		os.Exit(1)
+	if strings.ToLower(os.Getenv("ENV")) == "development" {
+		err = config.From("config/dev.config").FromEnv().To(&c)
+		if err != nil {
+			log.Error(errors.Wrap(err, 0), "error parsing config")
+			os.Exit(1)
+		}
+	} else {
+		err = config.From("config/prod.config").FromEnv().To(&c)
+		if err != nil {
+			log.Error(errors.Wrap(err, 0), "error parsing config")
+			os.Exit(1)
+		}
 	}
 
 	//parse avro schema

@@ -36,9 +36,11 @@ func NewESClient(params ESParams) (*ESClient, error) {
 	}
 
 	if params.Username != "" {
+		params.Log.Debug("Settings Elasticsearch username")
 		cfg.Username = params.Username
 	}
 	if params.Password != "" {
+		params.Log.Debug("Settings Elasticsearch password")
 		cfg.Password = params.Password
 	}
 
