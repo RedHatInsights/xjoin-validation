@@ -29,15 +29,15 @@ func (v *Validator) ValidateCount() (result ValidateCountResult, err error) {
 	}
 	result.ESCount = esCount
 
-	if dbCount != esCount {
+	diff := math.Abs(float64(dbCount - esCount))
+	result.MismatchCount = int(diff)
+	result.MismatchRatio = math.Round(diff/math.Max(math.Max(float64(dbCount), float64(esCount)), 1)*100) / 100
+
+	if result.MismatchRatio > 0.5 {
 		result.CountIsValid = false
 	} else {
 		result.CountIsValid = true
 	}
-
-	diff := math.Abs(float64(dbCount - esCount))
-	result.MismatchCount = int(diff)
-	result.MismatchRatio = math.Round(diff/math.Max(math.Max(float64(dbCount), float64(esCount)), 1)*100) / 100
 
 	return
 }
