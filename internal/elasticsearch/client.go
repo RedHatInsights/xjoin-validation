@@ -28,14 +28,20 @@ type ESParams struct {
 func NewESClient(params ESParams) (*ESClient, error) {
 	cfg := elasticsearch.Config{
 		Addresses: []string{params.Url},
-		Username:  params.Username,
-		Password:  params.Password,
 		//Transport: &http.Transport{
 		//	TLSClientConfig: &tls.Config{
 		//		InsecureSkipVerify: false,
 		//	},
 		//},
 	}
+
+	if params.Username != "" {
+		cfg.Username = params.Username
+	}
+	if params.Password != "" {
+		cfg.Password = params.Password
+	}
+
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, 0)
