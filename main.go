@@ -133,6 +133,7 @@ func main() {
 		Table:            dbConnectionInfo.Table,
 		SSLMode:          dbConnectionInfo.SSLMode,
 		ParsedAvroSchema: parsedSchema,
+		Log:              log,
 	})
 	if err != nil {
 		log.Error(errors.Wrap(err, 0), "error connecting to database")

@@ -190,6 +190,7 @@ var _ = Describe("ID validation", func() {
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
 				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
+			validator.SetDBCount(1)
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -229,6 +230,7 @@ var _ = Describe("ID validation", func() {
 				"http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1",
 				httpmock.NewStringResponder(200, test.LoadTestDataFile("elasticsearch/id/empty.scroll.response")))
 
+			validator.SetDBCount(3)
 			result, err := validator.ValidateIDs()
 			Expect(err).ToNot(HaveOccurred())
 

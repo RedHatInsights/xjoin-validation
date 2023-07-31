@@ -17,6 +17,8 @@ func (e *ESClient) GetIDsByModifiedOn(start time.Time, end time.Time) (ids []str
 	reqJSON := []byte(fmt.Sprintf(`{"query":{"range":{"%s":{"lt":"%s","gt":"%s"}}}}`,
 		modifiedOnField, end.UTC().Format(time.RFC3339Nano), start.UTC().Format(time.RFC3339Nano)))
 
+	e.log.Debug("Elasticsearch GetIDsByModifiedOn query", "reqJson", string(reqJSON))
+
 	return e.getIDsQuery(e.index, reqJSON)
 }
 

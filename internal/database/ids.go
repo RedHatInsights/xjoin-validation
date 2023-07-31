@@ -13,6 +13,8 @@ func (d *DBClient) GetIDsByModifiedOn(start time.Time, end time.Time) (ids []str
 		`SELECT id FROM %s WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id `,
 		d.Config.Table, start.Format(time.RFC3339Nano), end.Format(time.RFC3339Nano))
 
+	d.log.Debug("Database GetIDsByModifiedOn query", "query", query)
+
 	return d.queryIds(query)
 }
 

@@ -40,6 +40,8 @@ func NewLogger() (l Log, err error) {
 		cfg.Level = zap.NewAtomicLevelAt(zap.WarnLevel)
 	}
 
+	cfg.DisableCaller = true
+
 	zapLogger, err := cfg.Build()
 	if err != nil {
 		return

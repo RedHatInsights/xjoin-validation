@@ -23,6 +23,11 @@ type Validator struct {
 	State                      string
 	dbIds                      []string
 	Log                        logger.Log
+	dbCount                    int
+}
+
+func (v *Validator) SetDBCount(count int) {
+	v.dbCount = count
 }
 
 func (v *Validator) Validate() (response validation.ValidationResponse, err error) {

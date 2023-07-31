@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
+	logger "github.com/RedHatInsights/xjoin-validation/internal/log"
 	"github.com/go-errors/errors"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -11,6 +12,7 @@ import (
 type DBClient struct {
 	connection *sqlx.DB
 	Config     DBParams
+	log        logger.Log
 }
 
 type DBParams struct {
@@ -23,11 +25,13 @@ type DBParams struct {
 	SSLRootCert      string
 	Table            string
 	ParsedAvroSchema avro.ParsedAvroSchema
+	Log              logger.Log
 }
 
 func NewDBClient(config DBParams) (*DBClient, error) {
 	dbClient := DBClient{
 		Config: config,
+		log:    config.Log,
 	}
 	err := dbClient.Connect()
 	if err != nil {

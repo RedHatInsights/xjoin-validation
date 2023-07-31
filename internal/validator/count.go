@@ -22,6 +22,7 @@ func (v *Validator) ValidateCount() (result ValidateCountResult, err error) {
 		return result, errors.Wrap(err, 0)
 	}
 	result.DBCount = dbCount
+	v.SetDBCount(dbCount)
 
 	esCount, err := v.ESClient.CountIndex()
 	if err != nil {
