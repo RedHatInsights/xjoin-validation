@@ -51,7 +51,7 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 
 	//re-validate any mismatched records to check if they were invalid due to lag
 	//this can happen when the modified_on filter excludes records updated between retrieving records from the DB/ES
-	if result.MismatchCount > 0 {
+	if mismatchCount > 0 {
 		v.Log.Debug("Double checking mismatched IDs", "inDBOnly", inDBOnly, "inESOnly", inESOnly)
 		mismatchedIds := append(inDBOnly, inESOnly...)
 		dbIds, err = v.DBClient.GetIDsByIDList(mismatchedIds)

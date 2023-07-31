@@ -109,6 +109,9 @@ var _ = Describe("ID validation", func() {
 				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("1234"))
 
+			dbMock.ExpectQuery(`SELECT id FROM hosts WHERE id in ('1234')`).
+				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("1234"))
+
 			httpmock.RegisterResponder(
 				"GET",
 				"http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc",
@@ -129,7 +132,7 @@ var _ = Describe("ID validation", func() {
 
 			info := httpmock.GetCallCountInfo()
 			count := info["GET http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 		})
 
 		It("when ES has more IDs than the DB", func() {
@@ -139,6 +142,9 @@ var _ = Describe("ID validation", func() {
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
 				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
+				WillReturnRows(sqlmock.NewRows([]string{"id"}))
+
+			dbMock.ExpectQuery(`SELECT id FROM hosts WHERE id in ('1234')`).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}))
 
 			httpmock.RegisterResponder(
@@ -166,9 +172,9 @@ var _ = Describe("ID validation", func() {
 
 			info := httpmock.GetCallCountInfo()
 			count := info["GET http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 			count = info["GET http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 		})
 
 		It("when ES and DB have mismatched IDs", func() {
@@ -178,6 +184,9 @@ var _ = Describe("ID validation", func() {
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
 				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
+				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("5678"))
+
+			dbMock.ExpectQuery(`SELECT id FROM hosts WHERE id in ('5678','1234')`).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("5678"))
 
 			httpmock.RegisterResponder(
@@ -206,9 +215,9 @@ var _ = Describe("ID validation", func() {
 
 			info := httpmock.GetCallCountInfo()
 			count := info["GET http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 			count = info["GET http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 		})
 
 		It("when ES and DB have complex mismatched IDs", func() {
@@ -218,6 +227,9 @@ var _ = Describe("ID validation", func() {
 			dbMock.ExpectQuery(fmt.Sprintf(
 				`SELECT id FROM hosts WHERE modified_on > '%s' AND modified_on < '%s' ORDER BY id`,
 				startTime.Format(time.RFC3339Nano), endTime.Format(time.RFC3339Nano))).
+				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("in.both").AddRow("db.only.1").AddRow("db.only.2"))
+
+			dbMock.ExpectQuery(`SELECT id FROM hosts WHERE id in ('db.only.1','db.only.2','es.only.1','es.only.2')`).
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow("in.both").AddRow("db.only.1").AddRow("db.only.2"))
 
 			httpmock.RegisterResponder(
@@ -246,9 +258,9 @@ var _ = Describe("ID validation", func() {
 
 			info := httpmock.GetCallCountInfo()
 			count := info["GET http://mock-es:9200/mockindex/_search?_source=host.id&scroll=60000ms&size=5000&sort=_doc"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 			count = info["GET http://mock-es:9200/_search/scroll?scroll=60000ms&scroll_id=test-scroll-id-1"]
-			Expect(count).To(Equal(1))
+			Expect(count).To(Equal(2))
 		})
 	})
 })
