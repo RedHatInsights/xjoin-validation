@@ -73,7 +73,7 @@ func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo Dat
 	return
 }
 
-//currently assumes a single reference
+// currently assumes a single reference
 func main() {
 	log, err := logger.NewLogger()
 	if err != nil {
@@ -168,6 +168,7 @@ func main() {
 			Now:                        time.Now().UTC(),
 			Log:                        log,
 			InvalidThresholdPercentage: c.InvalidThresholdPercentage,
+			RootNode:                   parsedSchema.RootNode,
 		}
 		response, err := validator.Validate()
 		if err != nil {

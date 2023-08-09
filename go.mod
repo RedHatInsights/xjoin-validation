@@ -8,20 +8,20 @@ require (
 	github.com/elastic/go-elasticsearch/v7 v7.1.0
 	github.com/go-errors/errors v1.4.2
 	github.com/go-logr/logr v1.2.4
+	github.com/go-logr/zapr v1.2.4
 	github.com/go-test/deep v1.0.7
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/onsi/ginkgo/v2 v2.9.5
 	github.com/onsi/gomega v1.27.7
-	github.com/redhatinsights/xjoin-go-lib v0.0.6-0.20230315100834-0b032a3409e5
+	github.com/redhatinsights/xjoin-go-lib v0.0.8
 	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20221111094246-ab4555d3164f
 	sigs.k8s.io/controller-runtime v0.15.0
 )
 
 require (
-	github.com/go-logr/zapr v1.2.4 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

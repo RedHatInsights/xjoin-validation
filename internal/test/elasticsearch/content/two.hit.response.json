@@ -1,0 +1,397 @@
+{
+  "took": 7,
+  "timed_out": false,
+  "_shards": {
+    "total": 3,
+    "successful": 3,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "xjoinindexpipeline.hosts.1670945669060613328",
+        "_type": "_doc",
+        "_id": "1234",
+        "_score": null,
+        "_source": {
+          "host": {
+            "modified_on": "2023-01-04T14:40:54.826002Z",
+            "tags_search": [
+              "NS1/key3=val3",
+              "NS3/key3=val3",
+              "Sat/prod=",
+              "SPECIAL/key=val"
+            ],
+            "system_profile_facts": {
+              "insights_egg_version": "120.0.1",
+              "rhc_client_id": "044e36dc-4e2b-4e69-8948-9c65a7bf4976",
+              "owner_id": "1b36b20f-7fa0-4454-a6d2-008294e06378",
+              "yum_repos": [
+                {
+                  "gpgcheck": true,
+                  "name": "repo1",
+                  "base_url": "http://rpms.redhat.com",
+                  "enabled": true
+                }
+              ],
+              "os_release": "Red Hat EL 7.0.1",
+              "installed_products": [
+                {
+                  "name": "eap",
+                  "id": "123",
+                  "status": "UP"
+                },
+                {
+                  "name": "jbws",
+                  "id": "321",
+                  "status": "DOWN"
+                }
+              ],
+              "infrastructure_type": "jingleheimer junction cpu",
+              "cores_per_socket": 4,
+              "installed_services": [
+                "ndb",
+                "krb5"
+              ],
+              "bios_vendor": "Turd Ferguson",
+              "number_of_cpus": 1,
+              "insights_client_version": "12.0.12",
+              "kernel_modules": [
+                "i915",
+                "e1000e"
+              ],
+              "cpu_model": "Intel(R) Xeon(R) CPU E5-2690 0 @ 2.90GHz",
+              "subscription_status": "valid",
+              "system_memory_bytes": 1024,
+              "is_marketplace": false,
+              "operating_system": {
+                "major": 8,
+                "minor": 1,
+                "name": "RHEL"
+              },
+              "selinux_current_mode": "enforcing",
+              "katello_agent_running": false,
+              "last_boot_time": "2020-02-13T12:08:55Z",
+              "enabled_services": [
+                "ndb",
+                "krb5"
+              ],
+              "number_of_sockets": 2,
+              "running_processes": [
+                "vim",
+                "gcc",
+                "python"
+              ],
+              "bios_release_date": "10/31/2013",
+              "disk_devices": [
+                {
+                  "mount_point": "/home",
+                  "options": {
+                    "uid": "0",
+                    "ro": true
+                  },
+                  "label": "home drive",
+                  "type": "ext3",
+                  "device": "/dev/sdb1"
+                }
+              ],
+              "selinux_config_file": "enforcing",
+              "bios_version": "1.0.0uhoh",
+              "os_kernel_version": "3.10.0",
+              "captured_date": "2020-02-13T12:16:00Z",
+              "cpu_flags": [
+                "flag1",
+                "flag2"
+              ],
+              "network_interfaces": [
+                {
+                  "ipv6_addresses": [
+                    "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+                  ],
+                  "mac_address": "aa:bb:cc:dd:ee:ff",
+                  "name": "eth0",
+                  "ipv4_addresses": [
+                    "10.10.10.1"
+                  ],
+                  "state": "UP",
+                  "type": "loopback",
+                  "mtu": 1500
+                }
+              ],
+              "rhc_config_state": "044e36dc-4e2b-4e69-8948-9c65a7bf4976",
+              "subscription_auto_attach": "yes",
+              "arch": "x86-64",
+              "satellite_managed": false,
+              "infrastructure_vendor": "dell"
+            },
+            "reporter": "puptoo",
+            "display_name": "a96dac.foo.redhat.com",
+            "per_reporter_staleness": {
+              "puptoo": {
+                "check_in_succeeded": true,
+                "stale_timestamp": "2023-01-05T14:40:54.787157+00:00",
+                "last_check_in": "2023-01-04T14:40:54.817771+00:00"
+              }
+            },
+            "facts": {},
+            "tags": {
+              "Sat": {
+                "prod": []
+              },
+              "NS1": {
+                "key3": [
+                  "val3"
+                ]
+              },
+              "SPECIAL": {
+                "key": [
+                  "val"
+                ]
+              },
+              "NS3": {
+                "key3": [
+                  "val3"
+                ]
+              }
+            },
+            "canonical_facts": {
+              "bios_uuid": "fa067396-2449-4f16-83a3-b8fc32e040a6"
+            },
+            "ansible_host": null,
+            "created_on": "2023-01-04T14:40:54.825995Z",
+            "org_id": "test",
+            "tags_structured": [
+              {
+                "namespace": "NS1",
+                "value": "val3",
+                "key": "key3"
+              },
+              {
+                "namespace": "NS3",
+                "value": "val3",
+                "key": "key3"
+              },
+              {
+                "namespace": "Sat",
+                "value": null,
+                "key": "prod"
+              },
+              {
+                "namespace": "SPECIAL",
+                "value": "val",
+                "key": "key"
+              }
+            ],
+            "id": "1234",
+            "stale_timestamp": "2023-01-05T14:40:54.787157Z",
+            "tags_string": [
+              "NS1/key3/val3",
+              "NS3/key3/val3",
+              "Sat/prod/",
+              "SPECIAL/key/val"
+            ],
+            "account": null
+          }
+        },
+        "sort": [
+          "1234"
+        ]
+      },
+      {
+        "_index": "xjoinindexpipeline.hosts.1670945669060613328",
+        "_type": "_doc",
+        "_id": "5678",
+        "_score": null,
+        "_source": {
+          "host": {
+            "modified_on": "2023-01-04T14:40:54.826002Z",
+            "tags_search": [
+              "NS1/key3=val3",
+              "NS3/key3=val3",
+              "Sat/prod=",
+              "SPECIAL/key=val"
+            ],
+            "system_profile_facts": {
+              "insights_egg_version": "120.0.1",
+              "rhc_client_id": "044e36dc-4e2b-4e69-8948-9c65a7bf4976",
+              "owner_id": "1b36b20f-7fa0-4454-a6d2-008294e06378",
+              "yum_repos": [
+                {
+                  "gpgcheck": true,
+                  "name": "repo1",
+                  "base_url": "http://rpms.redhat.com",
+                  "enabled": true
+                }
+              ],
+              "os_release": "Red Hat EL 7.0.1",
+              "installed_products": [
+                {
+                  "name": "eap",
+                  "id": "123",
+                  "status": "UP"
+                },
+                {
+                  "name": "jbws",
+                  "id": "321",
+                  "status": "DOWN"
+                }
+              ],
+              "infrastructure_type": "jingleheimer junction cpu",
+              "cores_per_socket": 4,
+              "installed_services": [
+                "ndb",
+                "krb5"
+              ],
+              "bios_vendor": "Turd Ferguson",
+              "number_of_cpus": 1,
+              "insights_client_version": "12.0.12",
+              "kernel_modules": [
+                "i915",
+                "e1000e"
+              ],
+              "cpu_model": "Intel(R) Xeon(R) CPU E5-2690 0 @ 2.90GHz",
+              "subscription_status": "valid",
+              "system_memory_bytes": 1024,
+              "is_marketplace": false,
+              "operating_system": {
+                "major": 8,
+                "minor": 1,
+                "name": "RHEL"
+              },
+              "selinux_current_mode": "enforcing",
+              "katello_agent_running": false,
+              "last_boot_time": "2020-02-13T12:08:55Z",
+              "enabled_services": [
+                "ndb",
+                "krb5"
+              ],
+              "number_of_sockets": 2,
+              "running_processes": [
+                "vim",
+                "gcc",
+                "python"
+              ],
+              "bios_release_date": "10/31/2013",
+              "disk_devices": [
+                {
+                  "mount_point": "/home",
+                  "options": {
+                    "uid": "0",
+                    "ro": true
+                  },
+                  "label": "home drive",
+                  "type": "ext3",
+                  "device": "/dev/sdb1"
+                }
+              ],
+              "selinux_config_file": "enforcing",
+              "bios_version": "1.0.0uhoh",
+              "os_kernel_version": "3.10.0",
+              "captured_date": "2020-02-13T12:16:00Z",
+              "cpu_flags": [
+                "flag1",
+                "flag2"
+              ],
+              "network_interfaces": [
+                {
+                  "ipv6_addresses": [
+                    "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+                  ],
+                  "mac_address": "aa:bb:cc:dd:ee:ff",
+                  "name": "eth0",
+                  "ipv4_addresses": [
+                    "10.10.10.1"
+                  ],
+                  "state": "UP",
+                  "type": "loopback",
+                  "mtu": 1500
+                }
+              ],
+              "rhc_config_state": "044e36dc-4e2b-4e69-8948-9c65a7bf4976",
+              "subscription_auto_attach": "yes",
+              "arch": "x86-64",
+              "satellite_managed": false,
+              "infrastructure_vendor": "dell"
+            },
+            "reporter": "puptoo",
+            "display_name": "second host",
+            "per_reporter_staleness": {
+              "puptoo": {
+                "check_in_succeeded": true,
+                "stale_timestamp": "2023-01-05T14:40:54.787157+00:00",
+                "last_check_in": "2023-01-04T14:40:54.817771+00:00"
+              }
+            },
+            "facts": {},
+            "tags": {
+              "Sat": {
+                "prod": []
+              },
+              "NS1": {
+                "key3": [
+                  "val3"
+                ]
+              },
+              "SPECIAL": {
+                "key": [
+                  "val"
+                ]
+              },
+              "NS3": {
+                "key3": [
+                  "val3"
+                ]
+              }
+            },
+            "canonical_facts": {
+              "bios_uuid": "fa067396-2449-4f16-83a3-b8fc32e040a6"
+            },
+            "ansible_host": null,
+            "created_on": "2023-01-04T14:40:54.825995Z",
+            "org_id": "test",
+            "tags_structured": [
+              {
+                "namespace": "NS1",
+                "value": "val3",
+                "key": "key3"
+              },
+              {
+                "namespace": "NS3",
+                "value": "val3",
+                "key": "key3"
+              },
+              {
+                "namespace": "Sat",
+                "value": null,
+                "key": "prod"
+              },
+              {
+                "namespace": "SPECIAL",
+                "value": "val",
+                "key": "key"
+              }
+            ],
+            "id": "5678",
+            "stale_timestamp": "2023-01-05T14:40:54.787157Z",
+            "tags_string": [
+              "NS1/key3/val3",
+              "NS3/key3/val3",
+              "Sat/prod/",
+              "SPECIAL/key/val"
+            ],
+            "account": null
+          }
+        },
+        "sort": [
+          "5678"
+        ]
+      }
+    ]
+  }
+}

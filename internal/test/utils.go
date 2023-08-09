@@ -10,7 +10,7 @@ import (
 	"github.com/jarcoal/httpmock"
 	"github.com/jmoiron/sqlx"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -30,7 +30,7 @@ func GetRootDir() string {
 }
 
 func LoadTestDataFile(fileName string) string {
-	dataString, err := ioutil.ReadFile(GetRootDir() + "/test/" + fileName + ".json")
+	dataString, err := os.ReadFile(GetRootDir() + "/test/" + fileName + ".json")
 	Expect(err).ToNot(HaveOccurred())
 	return string(dataString)
 }
@@ -73,6 +73,7 @@ func BeforeEach() TestEnv {
 		LagCompSec: 0,
 		State:      "new",
 		Now:        time.Now(),
+		RootNode:   "host",
 	}
 
 	return TestEnv{

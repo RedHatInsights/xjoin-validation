@@ -21,6 +21,7 @@ type Validator struct {
 	InvalidThresholdPercentage int
 	Now                        time.Time
 	State                      string
+	RootNode                   string
 	dbIds                      []string
 	Log                        logger.Log
 	dbCount                    int
@@ -101,18 +102,25 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			"%v record's contents did not match.",
 			contentResponse.MismatchCount)
 
-		response = validation.ValidationResponse{
+		return validation.ValidationResponse{
 			Result:  validation.ValidationInvalid,
-			Reason:  "content mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
-				TotalMismatch:          contentResponse.MismatchCount,
-				IdsWithMismatchContent: []string{},
-				MismatchContentDetails: []validation.MismatchContentDetails{},
+				TotalMismatch:                    contentResponse.MismatchCount,
+				IdsMissingFromElasticsearch:      idsResponse.InDBOnly,
+				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
+				IdsOnlyInElasticsearch:           idsResponse.InESOnly,
+				IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+				IdsWithMismatchContent:           contentResponse.MismatchedIDs,
+				MismatchContentDetails:           contentResponse.MismatchedRecords,
+				Counts: validation.Counts{
+					RecordsInElasticsearch: countResponse.ESCount,
+					RecordsInDatabase:      countResponse.DBCount,
+					IDsValidated:           idsResponse.TotalDBRecordsRetrieved,
+					ContentsValidated:      contentResponse.TotalRecordsValidated,
+				},
 			},
-		}
-
-		return
+		}, nil
 	} else {
 		contentResponseString, err := json.Marshal(contentResponse)
 		if err != nil {
@@ -123,6 +131,21 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 
 	return validation.ValidationResponse{
 		Result: validation.ValidationValid,
+		Details: validation.ResponseDetails{
+			TotalMismatch:                    contentResponse.MismatchCount,
+			IdsMissingFromElasticsearch:      idsResponse.InDBOnly,
+			IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
+			IdsOnlyInElasticsearch:           idsResponse.InESOnly,
+			IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+			IdsWithMismatchContent:           contentResponse.MismatchedIDs,
+			MismatchContentDetails:           contentResponse.MismatchedRecords,
+			Counts: validation.Counts{
+				RecordsInElasticsearch: countResponse.ESCount,
+				RecordsInDatabase:      countResponse.DBCount,
+				IDsValidated:           idsResponse.TotalDBRecordsRetrieved,
+				ContentsValidated:      contentResponse.TotalRecordsValidated,
+			},
+		},
 	}, nil
 }
 
