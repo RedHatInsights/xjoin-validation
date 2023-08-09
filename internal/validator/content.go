@@ -2,7 +2,6 @@ package validator
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	goErrors "github.com/go-errors/errors"
 	"github.com/go-test/deep"
@@ -179,7 +178,8 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 		for e := range errorsChan {
 			fmt.Println("Error during full validation")
 			fmt.Println(e)
-			allErrors = errors.Join(err, e)
+			//allErrors = errors.Join(err, e)
+			allErrors = e //TODO: temporary until ubi9 releases a go 1.20 image
 		}
 
 		return result, goErrors.Wrap(allErrors, 0)
