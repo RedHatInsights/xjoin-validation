@@ -16,11 +16,11 @@ import (
 type Validator struct {
 	DBClient
 	ESClient
-	PeriodMin                  int
-	LagCompSec                 int
+	PeriodMin                  int  //the amount of time to look back when selecting data to validate
+	LagCompSec                 int  //the amount of time subtracted from NOW when selecting data to validate
+	ValidateEverything         bool //when true, validate the entire dataset. This will ignore PeriodMin
 	InvalidThresholdPercentage int
 	Now                        time.Time
-	State                      string
 	RootNode                   string
 	dbIds                      []string
 	Log                        logger.Log

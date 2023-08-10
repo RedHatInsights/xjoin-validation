@@ -37,6 +37,7 @@ type Config struct {
 	LagCompSec                 int    `config:"LAG_COMP_SEC"`
 	PeriodMin                  int    `config:"PERIOD_MIN"`
 	InvalidThresholdPercentage int    `config:"INVALID_THRESHOLD_PERCENTAGE"`
+	ValidateEverything         bool   `config:"VALIDATE_EVERYTHING"`
 }
 
 func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo DatabaseConnectionInfo, err error) {
@@ -169,6 +170,7 @@ func main() {
 			Log:                        log,
 			InvalidThresholdPercentage: c.InvalidThresholdPercentage,
 			RootNode:                   parsedSchema.RootNode,
+			ValidateEverything:         c.ValidateEverything,
 		}
 		response, err := validator.Validate()
 		if err != nil {

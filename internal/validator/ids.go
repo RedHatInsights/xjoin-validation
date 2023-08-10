@@ -26,7 +26,7 @@ func (v *Validator) validateIdChunk(dbIds []string, esIds []string) (mismatchCou
 
 func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	var startTime time.Time
-	if v.State == "INITIAL_SYNC" {
+	if v.ValidateEverything == true {
 		startTime = time.Unix(86400, 0) //24 hours since epoch
 	} else {
 		startTime = v.Now.Add(-time.Duration(v.PeriodMin) * time.Minute)
@@ -54,17 +54,17 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	if mismatchCount > 0 {
 		v.Log.Debug("Double checking mismatched IDs", "inDBOnly", inDBOnly, "inESOnly", inESOnly)
 		mismatchedIds := append(inDBOnly, inESOnly...)
-		dbIds, err = v.DBClient.GetIDsByIDList(mismatchedIds)
+		mismatchedDBIds, err := v.DBClient.GetIDsByIDList(mismatchedIds)
 		if err != nil {
 			return result, errors.Wrap(err, 0)
 		}
 
-		esIds, err = v.ESClient.GetIDsByIDList(mismatchedIds)
+		mismatchedESIDs, err := v.ESClient.GetIDsByIDList(mismatchedIds)
 		if err != nil {
 			return result, errors.Wrap(err, 0)
 		}
 
-		mismatchCount, inDBOnly, inESOnly = v.validateIdChunk(dbIds, esIds)
+		mismatchCount, inDBOnly, inESOnly = v.validateIdChunk(mismatchedDBIds, mismatchedESIDs)
 	}
 
 	result.InDBOnly = inDBOnly
@@ -74,13 +74,11 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	result.TotalDBRecordsRetrieved = len(dbIds)
 	result.TotalESRecordsRetrieved = len(esIds)
 
-	if mismatchCount > 0 {
+	if mismatchCount > 0 { //TODO: threshold
 		result.IDsAreValid = false
 	} else {
 		result.IDsAreValid = true
 	}
-
-	//ContentIsValid = (MismatchRatio * 100) <= float64(validationThresholdPercent)
 
 	return
 }
