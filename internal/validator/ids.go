@@ -26,7 +26,7 @@ func (v *Validator) validateIdChunk(dbIds []string, esIds []string) (mismatchCou
 
 func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 	var startTime time.Time
-	if v.ValidateEverything == true {
+	if v.ValidateEverything {
 		startTime = time.Unix(86400, 0) //24 hours since epoch
 	} else {
 		startTime = v.Now.Add(-time.Duration(v.PeriodMin) * time.Minute)
