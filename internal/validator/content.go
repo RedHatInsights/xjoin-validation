@@ -171,8 +171,6 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 	close(allIdDiffs)
 	close(errorsChan)
 
-	v.Log.Debug("all content validation threads completed")
-
 	if len(errorsChan) > 0 {
 		var allErrors error
 		for e := range errorsChan {
