@@ -47,7 +47,12 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Reason:  "count mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
-				TotalMismatch: countResponse.MismatchCount,
+				Counts: validation.CountDetails{
+					InconsistencyAbsolute:      countResponse.MismatchCount,
+					InconsistencyRatio:         countResponse.MismatchRatio,
+					RecordCountInElasticsearch: countResponse.ESCount,
+					RecordCountInDatabase:      countResponse.DBCount,
+				},
 			},
 		}
 
@@ -75,11 +80,21 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Reason:  "id mismatch",
 			Message: message,
 			Details: validation.ResponseDetails{
-				TotalMismatch:                    idsResponse.MismatchCount,
-				IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
-				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
-				IdsOnlyInElasticsearch:           idsResponse.InESOnly[:utils.Min(50, len(idsResponse.InESOnly))],
-				IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+				Counts: validation.CountDetails{
+					InconsistencyAbsolute:      countResponse.MismatchCount,
+					InconsistencyRatio:         countResponse.MismatchRatio,
+					RecordCountInElasticsearch: countResponse.ESCount,
+					RecordCountInDatabase:      countResponse.DBCount,
+				},
+				IDs: validation.IdsDetails{
+					InconsistencyAbsolute:            idsResponse.MismatchCount,
+					InconsistencyRatio:               idsResponse.MismatchRatio,
+					AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
+					IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
+					IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
+					IdsOnlyInElasticsearch:           idsResponse.InESOnly[:utils.Min(50, len(idsResponse.InESOnly))],
+					IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+				},
 			},
 		}
 
@@ -106,18 +121,27 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Result:  validation.ValidationInvalid,
 			Message: message,
 			Details: validation.ResponseDetails{
-				TotalMismatch:                    contentResponse.MismatchCount,
-				IdsMissingFromElasticsearch:      idsResponse.InDBOnly,
-				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
-				IdsOnlyInElasticsearch:           idsResponse.InESOnly,
-				IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
-				IdsWithMismatchContent:           contentResponse.MismatchedIDs,
-				MismatchContentDetails:           contentResponse.MismatchedRecords,
-				Counts: validation.Counts{
-					RecordsInElasticsearch: countResponse.ESCount,
-					RecordsInDatabase:      countResponse.DBCount,
-					IDsValidated:           idsResponse.TotalDBRecordsRetrieved,
-					ContentsValidated:      contentResponse.TotalRecordsValidated,
+				Counts: validation.CountDetails{
+					InconsistencyAbsolute:      countResponse.MismatchCount,
+					InconsistencyRatio:         countResponse.MismatchRatio,
+					RecordCountInElasticsearch: countResponse.ESCount,
+					RecordCountInDatabase:      countResponse.DBCount,
+				},
+				IDs: validation.IdsDetails{
+					InconsistencyAbsolute:            idsResponse.MismatchCount,
+					InconsistencyRatio:               idsResponse.MismatchRatio,
+					AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
+					IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
+					IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
+					IdsOnlyInElasticsearch:           idsResponse.InESOnly[:utils.Min(50, len(idsResponse.InESOnly))],
+					IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+				},
+				Content: validation.ContentDetails{
+					InconsistencyAbsolute:  contentResponse.MismatchCount,
+					InconsistencyRatio:     contentResponse.MismatchRatio,
+					AmountValidated:        contentResponse.TotalRecordsValidated,
+					IdsWithMismatchContent: contentResponse.MismatchedIDs,
+					MismatchContentDetails: contentResponse.MismatchedRecords,
 				},
 			},
 		}, nil
@@ -132,18 +156,27 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 	return validation.ValidationResponse{
 		Result: validation.ValidationValid,
 		Details: validation.ResponseDetails{
-			TotalMismatch:                    contentResponse.MismatchCount,
-			IdsMissingFromElasticsearch:      idsResponse.InDBOnly,
-			IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
-			IdsOnlyInElasticsearch:           idsResponse.InESOnly,
-			IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
-			IdsWithMismatchContent:           contentResponse.MismatchedIDs,
-			MismatchContentDetails:           contentResponse.MismatchedRecords,
-			Counts: validation.Counts{
-				RecordsInElasticsearch: countResponse.ESCount,
-				RecordsInDatabase:      countResponse.DBCount,
-				IDsValidated:           idsResponse.TotalDBRecordsRetrieved,
-				ContentsValidated:      contentResponse.TotalRecordsValidated,
+			Counts: validation.CountDetails{
+				InconsistencyAbsolute:      countResponse.MismatchCount,
+				InconsistencyRatio:         countResponse.MismatchRatio,
+				RecordCountInElasticsearch: countResponse.ESCount,
+				RecordCountInDatabase:      countResponse.DBCount,
+			},
+			IDs: validation.IdsDetails{
+				InconsistencyAbsolute:            idsResponse.MismatchCount,
+				InconsistencyRatio:               idsResponse.MismatchRatio,
+				AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
+				IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
+				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
+				IdsOnlyInElasticsearch:           idsResponse.InESOnly[:utils.Min(50, len(idsResponse.InESOnly))],
+				IdsOnlyInElasticsearchCount:      len(idsResponse.InESOnly),
+			},
+			Content: validation.ContentDetails{
+				InconsistencyAbsolute:  contentResponse.MismatchCount,
+				InconsistencyRatio:     contentResponse.MismatchRatio,
+				AmountValidated:        contentResponse.TotalRecordsValidated,
+				IdsWithMismatchContent: contentResponse.MismatchedIDs,
+				MismatchContentDetails: contentResponse.MismatchedRecords,
 			},
 		},
 	}, nil

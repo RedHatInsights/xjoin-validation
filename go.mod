@@ -15,7 +15,7 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/onsi/ginkgo/v2 v2.9.5
 	github.com/onsi/gomega v1.27.7
-	github.com/redhatinsights/xjoin-go-lib v0.0.9
+	github.com/redhatinsights/xjoin-go-lib v0.0.10
 	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20221111094246-ab4555d3164f
 )
