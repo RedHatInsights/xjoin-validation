@@ -50,7 +50,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Details: validation.ResponseDetails{
 				Counts: validation.CountDetails{
 					InconsistencyAbsolute:      countResponse.MismatchCount,
-					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'f', 4, 64),
 					RecordCountInElasticsearch: countResponse.ESCount,
 					RecordCountInDatabase:      countResponse.DBCount,
 				},
@@ -83,13 +83,13 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Details: validation.ResponseDetails{
 				Counts: validation.CountDetails{
 					InconsistencyAbsolute:      countResponse.MismatchCount,
-					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'f', 4, 64),
 					RecordCountInElasticsearch: countResponse.ESCount,
 					RecordCountInDatabase:      countResponse.DBCount,
 				},
 				IDs: validation.IdsDetails{
 					InconsistencyAbsolute:            idsResponse.MismatchCount,
-					InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'f', 4, 64),
 					AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
 					IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
 					IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
@@ -124,13 +124,13 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			Details: validation.ResponseDetails{
 				Counts: validation.CountDetails{
 					InconsistencyAbsolute:      countResponse.MismatchCount,
-					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'f', 4, 64),
 					RecordCountInElasticsearch: countResponse.ESCount,
 					RecordCountInDatabase:      countResponse.DBCount,
 				},
 				IDs: validation.IdsDetails{
 					InconsistencyAbsolute:            idsResponse.MismatchCount,
-					InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'f', 4, 64),
 					AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
 					IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
 					IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
@@ -139,7 +139,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 				},
 				Content: validation.ContentDetails{
 					InconsistencyAbsolute:  contentResponse.MismatchCount,
-					InconsistencyRatio:     strconv.FormatFloat(contentResponse.MismatchRatio, 'E', -1, 64),
+					InconsistencyRatio:     strconv.FormatFloat(contentResponse.MismatchRatio, 'f', 4, 64),
 					AmountValidated:        contentResponse.TotalRecordsValidated,
 					IdsWithMismatchContent: contentResponse.MismatchedIDs,
 					MismatchContentDetails: contentResponse.MismatchedRecords,
@@ -159,13 +159,13 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 		Details: validation.ResponseDetails{
 			Counts: validation.CountDetails{
 				InconsistencyAbsolute:      countResponse.MismatchCount,
-				InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'E', -1, 64),
+				InconsistencyRatio:         strconv.FormatFloat(countResponse.MismatchRatio, 'f', 4, 64),
 				RecordCountInElasticsearch: countResponse.ESCount,
 				RecordCountInDatabase:      countResponse.DBCount,
 			},
 			IDs: validation.IdsDetails{
 				InconsistencyAbsolute:            idsResponse.MismatchCount,
-				InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'E', -1, 64),
+				InconsistencyRatio:               strconv.FormatFloat(idsResponse.MismatchRatio, 'f', 4, 64),
 				AmountValidated:                  idsResponse.TotalDBRecordsRetrieved,
 				IdsMissingFromElasticsearch:      idsResponse.InDBOnly[:utils.Min(50, len(idsResponse.InDBOnly))],
 				IdsMissingFromElasticsearchCount: len(idsResponse.InDBOnly),
@@ -174,7 +174,7 @@ func (v *Validator) Validate() (response validation.ValidationResponse, err erro
 			},
 			Content: validation.ContentDetails{
 				InconsistencyAbsolute:  contentResponse.MismatchCount,
-				InconsistencyRatio:     strconv.FormatFloat(contentResponse.MismatchRatio, 'E', -1, 64),
+				InconsistencyRatio:     strconv.FormatFloat(contentResponse.MismatchRatio, 'f', 4, 64),
 				AmountValidated:        contentResponse.TotalRecordsValidated,
 				IdsWithMismatchContent: contentResponse.MismatchedIDs,
 				MismatchContentDetails: contentResponse.MismatchedRecords,
