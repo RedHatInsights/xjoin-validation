@@ -8,6 +8,7 @@ import (
 	. "github.com/RedHatInsights/xjoin-validation/internal/database"
 	. "github.com/RedHatInsights/xjoin-validation/internal/elasticsearch"
 	logger "github.com/RedHatInsights/xjoin-validation/internal/log"
+	"github.com/RedHatInsights/xjoin-validation/internal/metrics"
 	. "github.com/RedHatInsights/xjoin-validation/internal/validator"
 	"github.com/go-errors/errors"
 	"os"
@@ -38,6 +39,7 @@ type Config struct {
 	PeriodMin                  int    `config:"PERIOD_MIN"`
 	InvalidThresholdPercentage int    `config:"INVALID_THRESHOLD_PERCENTAGE"`
 	ValidateEverything         bool   `config:"VALIDATE_EVERYTHING"`
+	PrometheusPushGatewayUrl   string `config:"PROMETHEUS_PUSH_GATEWAY_URL"`
 }
 
 func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo DatabaseConnectionInfo, err error) {
@@ -159,6 +161,7 @@ func main() {
 	//run validation
 	//TODO: auto retry if sync is progressing (i.e. new mismatch count < previous mismatch count)
 	i := 0
+	var jsonResponse []byte
 	for i < c.NumAttempts {
 		log.Info("Validation attempt", "number", i)
 		validator := Validator{
@@ -178,7 +181,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		jsonResponse, err := json.Marshal(response)
+		jsonResponse, err = json.Marshal(response)
 		if err != nil {
 			log.Error(errors.Wrap(err, 0), "unable to marshal response to JSON")
 			os.Exit(1)
@@ -192,5 +195,12 @@ func main() {
 			i += 1
 		}
 	}
+
+	err = metrics.Push(c.PrometheusPushGatewayUrl, c.ElasticsearchIndex)
+	if err != nil {
+		log.Error(errors.Wrap(err, 0), "unable to push metrics")
+	}
+
+	fmt.Println(string(jsonResponse))
 	os.Exit(0)
 }
