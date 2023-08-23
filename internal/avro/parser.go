@@ -2,6 +2,7 @@ package avro
 
 import (
 	"encoding/json"
+	"github.com/RedHatInsights/xjoin-validation/internal/common"
 	"github.com/go-errors/errors"
 	"github.com/redhatinsights/xjoin-go-lib/pkg/avro"
 	"golang.org/x/exp/slices"
@@ -49,7 +50,7 @@ func (s *SchemaParser) parseDatabaseColumns(fullAvroSchema avro.Schema, transfor
 	root := fullAvroSchema.Fields[0].Name
 
 	for _, field := range fullAvroSchema.Fields[0].Type[0].Fields {
-		if !slices.Contains(transformedFields, root+"."+field.Name) {
+		if !slices.Contains(transformedFields, root+"."+field.Name) && !slices.Contains(common.InternalFields, field.Name) {
 			dbColumns = append(dbColumns, field.Name)
 		}
 	}

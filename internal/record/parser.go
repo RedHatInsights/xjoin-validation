@@ -3,6 +3,7 @@ package record
 import (
 	"encoding/json"
 	"github.com/RedHatInsights/xjoin-validation/internal/avro"
+	"github.com/RedHatInsights/xjoin-validation/internal/common"
 	"github.com/go-errors/errors"
 	"golang.org/x/exp/slices"
 	"time"
@@ -19,6 +20,10 @@ func (r *RecordParser) Parse() (parsedRecord map[string]interface{}, err error) 
 	for _, field := range r.ParsedAvroSchema.FullAvroSchema.Fields[0].Type[0].Fields {
 		if slices.Contains(r.ParsedAvroSchema.TransformedFields, r.ParsedAvroSchema.RootNode+"."+field.Name) {
 			continue //TODO: validate transformed fields
+		}
+
+		if slices.Contains(common.InternalFields, field.Name) {
+			continue
 		}
 
 		var xjoinType string
