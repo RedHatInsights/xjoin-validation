@@ -67,8 +67,12 @@ func (v *Validator) ValidateIDs() (result ValidateIDsResult, err error) {
 		mismatchCount, inDBOnly, inESOnly = v.validateIdChunk(mismatchedDBIds, mismatchedESIDs)
 	}
 
-	result.InDBOnly = inDBOnly
-	result.InESOnly = inESOnly
+	inDBOnlyLength := int(math.Min(float64(len(inDBOnly)), 10))
+	result.InDBOnly = inDBOnly[0:inDBOnlyLength]
+
+	inESOnlyLength := int(math.Min(float64(len(inESOnly)), 10))
+	result.InESOnly = inESOnly[0:inESOnlyLength]
+
 	result.MismatchCount = mismatchCount
 	result.MismatchRatio = float64(mismatchCount) / math.Max(float64(v.dbCount)+float64(len(result.InESOnly)), 1)
 	result.TotalDBRecordsRetrieved = len(dbIds)
