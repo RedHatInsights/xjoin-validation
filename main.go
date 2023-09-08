@@ -186,7 +186,6 @@ func main() {
 			log.Error(errors.Wrap(err, 0), "unable to marshal response to JSON")
 			os.Exit(1)
 		}
-		fmt.Println(string(jsonResponse))
 
 		if response.Result == "valid" {
 			break
@@ -201,6 +200,6 @@ func main() {
 		log.Error(errors.Wrap(err, 0), "unable to push metrics")
 	}
 
-	fmt.Println(string(jsonResponse))
+	log.Result(string(jsonResponse))
 	os.Exit(0)
 }

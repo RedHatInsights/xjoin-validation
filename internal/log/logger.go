@@ -65,3 +65,7 @@ func (l Log) Warn(message string, keysAndValues ...interface{}) {
 func (l Log) Error(err error, message string, keysAndValues ...interface{}) {
 	l.Logger.Error(err, message, keysAndValues...)
 }
+
+func (l Log) Result(result string) {
+	l.Logger.V(-2).WithName("result").Info(result)
+}
