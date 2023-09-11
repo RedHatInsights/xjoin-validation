@@ -40,6 +40,8 @@ type Config struct {
 	InvalidThresholdPercentage int    `config:"INVALID_THRESHOLD_PERCENTAGE"`
 	ValidateEverything         bool   `config:"VALIDATE_EVERYTHING"`
 	PrometheusPushGatewayUrl   string `config:"PROMETHEUS_PUSH_GATEWAY_URL"`
+	ContentMaxThreads          int    `config:"CONTENT_MAX_THREADS"`
+	ContentChunkSize           int    `config:"CONTENT_CHUNK_SIZE"`
 }
 
 func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo DatabaseConnectionInfo, err error) {
@@ -174,6 +176,8 @@ func main() {
 			InvalidThresholdPercentage: c.InvalidThresholdPercentage,
 			RootNode:                   parsedSchema.RootNode,
 			ValidateEverything:         c.ValidateEverything,
+			ContentChunkSize:           c.ContentChunkSize,
+			ContentMaxThreads:          c.ContentMaxThreads,
 		}
 		response, err := validator.Validate()
 		if err != nil {

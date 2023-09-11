@@ -74,6 +74,8 @@ func BeforeEach() TestEnv {
 		ValidateEverything: false,
 		Now:                time.Now(),
 		RootNode:           "host",
+		ContentChunkSize:   1,
+		ContentMaxThreads:  1,
 	}
 
 	return TestEnv{

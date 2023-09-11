@@ -20,6 +20,8 @@ type Validator struct {
 	PeriodMin                  int  //the amount of time to look back when selecting data to validate
 	LagCompSec                 int  //the amount of time subtracted from NOW when selecting data to validate
 	ValidateEverything         bool //when true, validate the entire dataset. This will ignore PeriodMin
+	ContentMaxThreads          int  //the number of concurrent threads when validating content
+	ContentChunkSize           int  //the number of records to validate in each chunk during content validation
 	InvalidThresholdPercentage int
 	Now                        time.Time
 	RootNode                   string
