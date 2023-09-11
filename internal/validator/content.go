@@ -135,8 +135,7 @@ func (v *Validator) validateFullChunkAsync(chunk []string, allIdDiffs chan valid
 func (v *Validator) ValidateContent() (result ValidateContentResult, err error) {
 	v.Log.Debug("starting content validation", "num ids", len(v.dbIds))
 
-	//chunkSize := i.Parameters.FullValidationChunkSize.Int() //TODO parameterize
-	chunkSize := 100
+	chunkSize := v.ContentChunkSize
 	var numChunks = int(math.Ceil(float64(len(v.dbIds)) / float64(chunkSize)))
 
 	allIdDiffs := make(chan validation.MismatchedRecords, numChunks)
@@ -161,7 +160,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 		numThreads += 1
 		go v.validateFullChunkAsync(chunk, allIdDiffs, errorsChan, wg)
 
-		maxThreads := 10 //TODO: parameterize
+		maxThreads := v.ContentMaxThreads
 		if numThreads == maxThreads || j == numChunks-1 {
 			wg.Wait()
 			numThreads = 0
