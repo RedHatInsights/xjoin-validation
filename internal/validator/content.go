@@ -133,7 +133,7 @@ func (v *Validator) validateFullChunkAsync(chunk []string, allIdDiffs chan valid
 }
 
 func (v *Validator) ValidateContent() (result ValidateContentResult, err error) {
-	v.Log.Debug("starting content validation", "num ids", len(v.dbIds))
+	v.Log.Debug("starting content validation", "num ids", len(v.dbIds), "max threads", v.ContentMaxThreads, "chunk size", v.ContentChunkSize)
 
 	chunkSize := v.ContentChunkSize
 	var numChunks = int(math.Ceil(float64(len(v.dbIds)) / float64(chunkSize)))
@@ -162,6 +162,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 
 		maxThreads := v.ContentMaxThreads
 		if numThreads == maxThreads || j == numChunks-1 {
+			v.Log.Debug("waiting for content validation chunk to complete")
 			wg.Wait()
 			numThreads = 0
 		}

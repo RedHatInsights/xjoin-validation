@@ -35,6 +35,13 @@ func (v *Validator) SetDBCount(count int) {
 }
 
 func (v *Validator) Validate() (response validation.ValidationResponse, err error) {
+	//f, err := os.OpenFile("/tmp/validation.profile.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	//if err != nil {
+	//	os.Exit(1)
+	//}
+	//trace.Start(f)
+	//defer trace.Stop()
+
 	countResponse, err := v.ValidateCount()
 	if err != nil {
 		return response, errors.Wrap(err, 0)

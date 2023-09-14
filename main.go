@@ -80,6 +80,8 @@ func parseDatabaseConnectionFromEnv(datasourceName string) (dbConnectionInfo Dat
 
 // currently assumes a single reference
 func main() {
+	start := time.Now()
+
 	log, err := logger.NewLogger()
 	if err != nil {
 		fmt.Println("Unable to initialize logger")
@@ -180,6 +182,7 @@ func main() {
 			ContentMaxThreads:          c.ContentMaxThreads,
 		}
 		response, err := validator.Validate()
+
 		if err != nil {
 			log.Error(errors.Wrap(err, 0), "error during validation")
 			os.Exit(1)
@@ -204,6 +207,10 @@ func main() {
 		log.Error(errors.Wrap(err, 0), "unable to push metrics")
 	}
 
+	end := time.Now()
+	log.Debug("time to validate", "milliseconds", end.UnixMilli()-start.UnixMilli(), "seconds", end.Unix()-start.Unix())
+
 	log.Result(string(jsonResponse))
+	time.Sleep(2 * time.Minute)
 	os.Exit(0)
 }
