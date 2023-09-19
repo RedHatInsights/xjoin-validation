@@ -215,6 +215,7 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 	result.ContentIsValid = (result.MismatchRatio * 100) <= float64(v.InvalidThresholdPercentage)
 	result.MismatchedIDs = mismatchedIds
 	result.TotalRecordsValidated = len(v.dbIds)
+	result.MismatchedRecords = make(validation.MismatchedRecords)
 
 	//log at most 50 invalid systems
 	if result.MismatchCount > 50 {
