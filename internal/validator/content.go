@@ -144,6 +144,11 @@ func (v *Validator) ValidateContent() (result ValidateContentResult, err error) 
 	wg := new(sync.WaitGroup)
 
 	for j := 0; j < numChunks; j++ {
+		//prevent the diffs from growing too large and eating up all the memory
+		if len(allIdDiffs) > 50 || len(errorsChan) > 50 {
+			break
+		}
+
 		//determine which chunk of systems to validate
 		start := j * chunkSize
 		var end int
